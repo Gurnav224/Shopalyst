@@ -1,10 +1,8 @@
 /* eslint-disable react/prop-types */
-import Header from "../components/Header";
 import { useEffect, useState } from "react";
 import api from "../api/api";
 import CategoriesSlider from "../components/CategoriesSlider";
 import BannerSlider from "../components/BannerSlider";
-import { Link } from "react-router-dom";
 
 const Home = () => {
   const [categories, setCategories] = useState([]);
@@ -24,75 +22,64 @@ const Home = () => {
 
   return (
     <>
-      <Header />
-      <div className="container   my-4 ">
+      <div className="my-4 mx-5">
         <BannerSlider />
-    
-
       </div>
 
-      <div className="container text-center">
-      <Link to={"/products"} className="btn  mx-auto btn-primary btn-lg fs-2 text-center ">OUR PRODUCTS</Link>
-      </div>
+      <div className=" my-4">
+        <h2 className="text-center my-8 text-5xl font-bold underline">Our Categories</h2>
 
-      <div className="container my-4">
-      <h2 className="display-4 text-center my-4">Our Categories</h2>
-        <CategoriesSlider categories={categories} />
+        <div className="container mx-auto">
+          <CategoriesSlider categories={categories} />
+        </div>
 
+        <h2 className="text-5xl text-center font-bold my-8 underline">
+          New Trends
+        </h2>
 
-        <h2 className="display-4 text-center my-4">New Trends</h2>
-
-        <div className="row my-3">
-          <div className="col-md-6">
-            <div className="card mb-3">
-              <div className="row g-0">
-                <div className="col-md-4">
+        <div className="flex flex-col md:flex-row gap-6 my-6 container mx-auto">
+          <div className="w-full md:w-1/2">
+            <div className="bg-white shadow-md rounded-lg overflow-hidden">
+              <div className="flex">
+                <div className="w-1/3">
                   <img
                     src="https://images.pexels.com/photos/3965557/pexels-photo-3965557.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                    className="img-fluid rounded-start"
-                    alt="..."
+                    className="h-full w-full object-cover"
+                    alt="Summer Collection"
                   />
                 </div>
-                <div className="col-md-8">
-                  <div className="card-body">
-                    <p className="card-text">New Arrivals</p>
-                    <h5 className="card-title">Summer Collection</h5>
-                    <p className="card-text">
-                      <small className="text-body-secondary">
-                        Check out our best Collection to store warm in the style
-                        season
-                      </small>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-6">
-            <div className="card mb-3">
-              <div className="row g-0">
-                <div className="col-md-4">
-                  <img
-                    src="https://images.pexels.com/photos/17824872/pexels-photo-17824872/free-photo-of-young-model-in-white-crop-top-and-black-jacket.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                    className="img-fluid rounded-start"
-                    alt="..."
-                  />
-                </div>
-                <div className="col-md-8">
-                  <div className="card-body">
-                    <p className="card-text">New Fashion Daily</p>
-                    <h5 className="card-title">Winter Collection</h5>
-                    <p className="card-text">
-                      <small className="text-body-secondary">
-                        Check out our best Collection new daily style
-                      </small>
-                    </p>
-                  </div>
+                <div className="w-2/3 p-4">
+                  <p className="text-sm text-gray-500">New Arrivals</p>
+                  <h5 className="text-lg font-semibold">Summer Collection</h5>
+                  <p className="text-sm text-gray-400 mt-2">
+                    Check out our best collection to stay warm in style this
+                    season.
+                  </p>
                 </div>
               </div>
             </div>
           </div>
 
+          <div className="w-full md:w-1/2">
+            <div className="bg-white shadow-md rounded-lg overflow-hidden">
+              <div className="flex">
+                <div className="w-1/3">
+                  <img
+                    src="https://images.pexels.com/photos/17824872/pexels-photo-17824872/free-photo-of-young-model-in-white-crop-top-and-black-jacket.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                    className="h-full w-full object-cover"
+                    alt="Winter Collection"
+                  />
+                </div>
+                <div className="w-2/3 p-4">
+                  <p className="text-sm text-gray-500">New Fashion Daily</p>
+                  <h5 className="text-3xl my-2 font-semibold">Winter Collection</h5>
+                  <p className="text-sm text-gray-400 mt-2">
+                    Check out our best collection with new daily styles.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>

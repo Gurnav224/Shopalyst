@@ -1,45 +1,57 @@
-/* eslint-disable react/no-unknown-property */
+/* eslint-disable react/prop-types */
+import { useState } from 'react';
+import { Search, User, Heart, ShoppingCart } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-import { Link } from "react-router-dom";
-import { CiHeart } from "react-icons/ci";
-import { CiSearch } from "react-icons/ci";
-import { FaShoppingCart } from "react-icons/fa";
-
-const Header = () => {
+const Header = ({cart}) => {
+  const [searchQuery, setSearchQuery] = useState('');
   return (
-    <header className="container-fluid bg-secondary ">
-      <nav className="navbar navbar-expand-lg navbar-light">
-        <div className="container-fluid">
-          <Link to="/" className="navbar-brand text-light fw-bold   w-25">
-            MyShoppingSite
-          </Link>
+    <header >
+       <nav className="bg-slate-50 shadow-md py-4 px-6 flex items-center justify-between">
+      {/* Logo */}
+      <div className="flex items-center">
+        <img 
+          src="/api/placeholder/150/50" 
+          alt="Store Logo" 
+          className="h-10"
+        />
+      </div>
 
-          <div className="d-flex align-items-center  position-relative  mx-2 w-25">
-           <CiSearch size={30} className="position-absolute" style={{left:5}}/>
-            <input
-              className="form-control ps-5"
-              type="search"
-              placeholder="Search"
-              aria-label="Search"
-            />
-          </div>
+      {/* Navigation Links */}
+      <div className="flex space-x-6">
+        <a href="/" className="text-gray-800 hover:text-blue-600 transition">Home</a>
+        <a href="/products" className="text-gray-800 hover:text-blue-600 transition">Products</a>
+        <a href="/products/Tops" className="text-gray-800 hover:text-blue-600 transition">Categories</a>
+      </div>
 
-          <div className="d-flex align-items-center justify-content-end gap-2 w-25 ">
-            <a href="#" className="btn btn-dark ">
-              Login
-            </a>
+      {/* Search Bar */}
+      <div className="flex items-center border rounded-full px-4 py-2">
+        <input 
+          type="text" 
+          placeholder="Search products..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="focus:outline-none w-64"
+        />
+        <Search className="text-gray-500 ml-2" size={20} />
+      </div>
 
-            <button className="btn btn-outline-dark ">
-              <CiHeart size={30}/>
-            </button>
-
-            <button className="btn btn-outline-dark  ">
-              Cart
-              <FaShoppingCart size={30} className="ps-1"/>
-            </button>
-          </div>
-        </div>
-      </nav>
+      {/* User Actions */}
+      <div className="flex items-center space-x-4">
+        <button className="hover:bg-gray-100 p-2 rounded-full">
+          <Heart className="text-gray-700" size={24} />
+        </button>
+        <button className="hover:bg-gray-100 p-2 rounded-full">
+          <User className="text-gray-700" size={24} />
+        </button>
+        <Link to="/cart" className="hover:bg-gray-100 p-2 rounded-full relative">
+          <ShoppingCart className="text-gray-700" size={24} />
+          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-1">
+            {cart.length}
+          </span>
+        </Link>
+      </div>
+    </nav>
     </header>
   );
 };

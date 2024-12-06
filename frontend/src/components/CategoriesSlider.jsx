@@ -1,71 +1,27 @@
 /* eslint-disable react/prop-types */
-
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import { Link } from "react-router-dom";
 
-
-
-function CategoriesSlider({categories}) {
-  var settings = {
-    infinite: true,
-    speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 4,
-    initialSlide: 0,
-    cssEase: "linear",
-    useCss:true,
-
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 3,
-          infinite: true,
-          dots: true
-        }
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 2,
-          initialSlide: 2
-        }
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1
-        }
-      }
-    ]
-  };
+function CategoriesSlider({ categories }) {
   return (
-    <div className="slider-container">
-      <Slider {...settings}>
-        {
-        categories.map((category) => (
-        <Link to={`/products/${category.name}`} key={category._id} className="text-decoration-none">
-
-          <div className="card" >
-            <img src={category.categoryImgUrl} height={250} className="object-fit-cover card-img" alt="" />
-            <div className="card-body">
-              <h2 className="text-center">{category.name}</h2>
+    <div className="overflow-x-auto whitespace-nowrap py-4">
+      <div className="flex space-x-4">
+        {categories.map((category) => (
+          <Link to={`/products/${category.name}`} key={category._id} className="flex-none w-48">
+            <div className="relative rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105">
+              <img
+                src={category.categoryImgUrl}
+                alt={category.name}
+                className="w-full h-32 object-cover"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-center py-2">
+                <h2 className="text-lg font-semibold">{category.name}</h2>
+              </div>
             </div>
-          </div>
-        </Link>
-
-        ))
-        }
-      </Slider>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
-
-
 
 export default CategoriesSlider;

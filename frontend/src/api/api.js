@@ -12,6 +12,10 @@ const api = {
             const response = await fetch(`${baseUrl}/products`);
             return response.json()
         
+    },
+    getProductById: async (productId) => {
+        const response = await fetch(`${baseUrl}/products/${productId}`);
+        return response.json();
     }
 }
 
