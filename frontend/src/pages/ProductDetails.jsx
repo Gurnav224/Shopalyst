@@ -1,16 +1,35 @@
+/* eslint-disable react/prop-types */
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "../api/api.js";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
-
-import {Navigation , Pagination} from "swiper/modules";
+import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import ProductCard from "../components/ProductCard.jsx";
+import { Star, ShoppingCart, Heart } from "lucide-react";
 
-const ProductDetails = () => {
+
+const ProductDetails = ({setCart , setWishlist}) => {
   const { productId } = useParams();
   const [product, setProduct] = useState({});
+  const [relatedProducts, setRelatedProducts] = useState([]);
+
+  const updateProduct = async (id, updatedQuantity) => {
+    try {
+      const data = await api.updateProductQuantity(id, updatedQuantity);
+      if (data) {
+        console.log("data successfully updated", data);
+        setProduct((prevProduct) => ({
+          ...prevProduct,
+          quantity: updatedQuantity,
+        }));
+      }
+    } catch (error) {
+      console.error("Failed to update the product quantity", error);
+    }
+  };
 
   useEffect(() => {
     const fetchProductById = async () => {
@@ -20,54 +39,150 @@ const ProductDetails = () => {
     fetchProductById();
   }, [productId]);
 
-  console.log(product);
-  return (
-    <>
+  const handleIncrement = (id) => {
+    const newQuantity = product.quantity + 1;
+    updateProduct(id, newQuantity);
+  };
 
-      <div className="flex  container mx-auto mt-6 p-6 bg-gray-50 shadow-lg rounded-lg">
+  const handleDecrement = (id) => {
+    const newQuantity = Math.max(0, product.quantity - 1);
+    updateProduct(id, newQuantity);
+  };
+
+  useEffect(() => {
+    const fetchCategoriesProduct = async () => {
+      try {
+        const data = await api.relatedCategoryProducts(product?.category);
+        setRelatedProducts(data?.products);
+      } catch (error) {
+        console.error("failed to get related category product", error);
+      }
+    };
+    fetchCategoriesProduct();
+  }, [product?.category]);
+
+
+
+ 
+
+
+
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="grid md:grid-cols-2 gap-8 bg-white shadow-lg rounded-xl overflow-hidden">
         {/* Product Images Slider */}
-        <Swiper
-          modules={[Navigation, Pagination]}
-          navigation
-          pagination={{ clickable: true }}
-          spaceBetween={10}
-          slidesPerView={1}
-          className="w-80  h-80  mx-auto"
-        >
-          {product?.images?.map((link, index) => (
-            <SwiperSlide key={index}>
-              <img
-                src={link}
-                alt={product.name}
-                className="w-full h-auto rounded-lg object-cover border border-gray-300 shadow-sm"
-              />
-            </SwiperSlide>
-          ))}
-        </Swiper>
+        <div className="p-4">
+          <Swiper
+            modules={[Navigation, Pagination]}
+            navigation
+            pagination={{ clickable: true }}
+            spaceBetween={10}
+            slidesPerView={1}
+            className="w-full h-[450px] rounded-lg"
+          >
+            {product?.images?.map((link, index) => (
+              <SwiperSlide
+                key={index}
+                className="flex items-center justify-center"
+              >
+                <img
+                  src={link}
+                  alt={product.name}
+                  className="max-w-full max-h-full object-contain rounded-lg"
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+
+          {/* Action Buttons */}
+          <div className="flex space-x-4 mt-6">
+            <button className="flex-1 flex items-center justify-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105">
+              <ShoppingCart className="mr-2" /> Buy Now
+            </button>
+            <button className="flex-1 flex items-center justify-center bg-gray-100 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-200 transition duration-300 ease-in-out transform hover:scale-105">
+              <Heart className="mr-2" /> Add to Wishlist
+            </button>
+          </div>
+        </div>
 
         {/* Product Details */}
-        <div className="mt-8 p-4">
-          <h3 className="text-2xl font-bold text-gray-800 mb-4">
+        <div className="p-6 space-y-4">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
             {product.name}
-          </h3>
-          <p className="text-lg text-gray-600 mb-2">
-            <span className="font-medium text-gray-700">Brand:</span>{" "}
-            {product.brand}
-          </p>
-          <p className="text-gray-600 mb-4">
-            <span className="font-medium text-gray-700">Description:</span>{" "}
+          </h1>
+
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center text-yellow-500">
+              <Star className="w-5 h-5 fill-current mr-1" />
+              <span className="font-semibold">{product.rating} / 5</span>
+            </div>
+            <span className="text-gray-500">|</span>
+            <span className="text-gray-600">Brand: {product.brand}</span>
+          </div>
+
+          <div className="text-4xl font-extrabold text-blue-600 my-4">
+            Price: ${product.price}
+          </div>
+
+          <p className="text-gray-700 leading-relaxed mb-4">
             {product.description}
           </p>
-          <p className="text-gray-600">
-            <span className="font-medium text-gray-700">Rating:</span>{" "}
-            <span className="text-yellow-500 font-semibold">
-              {product.rating}
-            </span>
-          </p>
+
+          {/* Quantity Control */}
+          <div className="flex items-center space-x-4 mb-6">
+            <span className="text-gray-700 font-medium">Quantity:</span>
+            <div className="flex items-center border rounded-lg overflow-hidden">
+              <button
+                onClick={() => handleDecrement(product._id)}
+                disabled={product.quantity <= 0}
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                -
+              </button>
+              <span className="px-6 py-2 bg-white text-center min-w-[60px]">
+                {product.quantity}
+              </span>
+              <button
+                onClick={() => handleIncrement(product._id)}
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          {/* Additional Details */}
+          <div className="grid grid-cols-2 gap-4 border-t pt-4">
+            <div>
+              <span className="block text-sm text-gray-600">Category</span>
+              <span className="font-medium">{product.category}</span>
+            </div>
+            <div>
+              <span className="block text-sm text-gray-600">Availability</span>
+              <span
+                className={`font-medium ${
+                  product.quantity > 0 ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {product.quantity > 0 ? "In Stock" : "Out of Stock"}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
+      <div className="container mx-auto px-4 py-8">
+        <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+          Related Products
+        </h2>
 
-    </>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {relatedProducts?.map((product) => (
+            <ProductCard key={product._id} setWishlist={setWishlist} product={product} setCart={setCart}/>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };
 

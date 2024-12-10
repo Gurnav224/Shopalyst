@@ -19,9 +19,9 @@ const Header = ({cart}) => {
 
       {/* Navigation Links */}
       <div className="flex space-x-6">
-        <a href="/" className="text-gray-800 hover:text-blue-600 transition">Home</a>
-        <a href="/products" className="text-gray-800 hover:text-blue-600 transition">Products</a>
-        <a href="/products/Tops" className="text-gray-800 hover:text-blue-600 transition">Categories</a>
+        <Link to="/" className="text-gray-800 hover:text-blue-600 transition">Home</Link>
+        <Link to="/products" className="text-gray-800 hover:text-blue-600 transition">Products</Link>
+        <Link href="/products/Tops" className="text-gray-800 hover:text-blue-600 transition">Categories</Link>
       </div>
 
       {/* Search Bar */}
@@ -38,9 +38,9 @@ const Header = ({cart}) => {
 
       {/* User Actions */}
       <div className="flex items-center space-x-4">
-        <button className="hover:bg-gray-100 p-2 rounded-full">
+        <Link to='/wishlist' className="hover:bg-gray-100 p-2 rounded-full">
           <Heart className="text-gray-700" size={24} />
-        </button>
+        </Link>
         <button className="hover:bg-gray-100 p-2 rounded-full">
           <User className="text-gray-700" size={24} />
         </button>

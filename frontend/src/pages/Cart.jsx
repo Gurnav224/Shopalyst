@@ -27,7 +27,7 @@ const Cart = ({ cart }) => {
                 <span className="font-medium">Brand:</span> {item.brand}
               </p>
               <p className="text-gray-800 font-medium text-lg">
-                ₹{item.price.toLocaleString()}
+                ${item.price.toLocaleString()}
               </p>
             </div>
           </li>
