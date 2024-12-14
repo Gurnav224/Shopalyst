@@ -31,6 +31,10 @@ const ProductSchema = new Schema({
     enum: ['Tops', 'Bottoms', 'Dresses', 'Outerwear', 'Accessories', 'Footwear', 'Underwear', 'Activewear','Others'],
     default:'Others'
   },
+  quantity:{
+    type:Number,
+    default:1
+  },
   brand: {
      type: String, 
      required: true

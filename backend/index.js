@@ -85,12 +85,38 @@ app.get('/api/products/:id', async (req , res) => {
   }
 })
 
+app.put('/api/products/updateQuantity/:id', async (req , res) => {
+  const {id} = req.params;
+  const {quantity} = req.body;
+  console.log(id,quantity)
+  try {
+    const updateProductQuantity = await Product.findByIdAndUpdate(id,{quantity},{new:true});
+    res.status(200).json({message:"product updated successfully",updateProductQuantity})
+  } catch (error) {
+    res.status(500).json({error:'failed to update product quantity'})
+  }
+})
+
+
+app.get('/api/products/category/:category', async (req , res) => {
+  const {category} = req.params;
+  try {
+    const products = await Product.find({category:category});
+    if(products.length === 0) {
+      return res.status(404).json({message:"failed to get related category"})
+    }
+    res.status(200).json({message:"get product by related category",products})
+  } catch (error) {
+    console.error('failed get category related product');
+    res.status(500).json({message:"failed get category related product"})
+  }
+})
+
 // API => GET PRODUCT BY SELECTED CATEGORY
 
 
 app.get('/api/products/categories/:category', async (req ,res) => {
   const { category} = req.params;
-  console.log(category)
   try {
       const products = await Product.find({category});
       res.status(200).json(products);
