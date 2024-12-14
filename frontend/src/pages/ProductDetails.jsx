@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useParams } from "react-router-dom";
+import { useParams  , useNavigate} from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "../api/api.js";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -8,13 +8,14 @@ import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import ProductCard from "../components/ProductCard.jsx";
-import { Star, ShoppingCart, Heart } from "lucide-react";
+import { Star, ShoppingCart } from "lucide-react";
 
 
-const ProductDetails = ({setCart , setWishlist}) => {
+const ProductDetails = ({ handleAddToCart, handleAddToWishlist, isProductInCart , isProductInWishlist}) => {
   const { productId } = useParams();
   const [product, setProduct] = useState({});
   const [relatedProducts, setRelatedProducts] = useState([]);
+  const navigate  = useNavigate()
 
   const updateProduct = async (id, updatedQuantity) => {
     try {
@@ -62,7 +63,11 @@ const ProductDetails = ({setCart , setWishlist}) => {
   }, [product?.category]);
 
 
-
+  const handleNavigateToCart = (e) => {
+    e.stopPropagation();
+    e.preventDefault()
+    navigate('/cart')
+  } 
  
 
 
@@ -97,12 +102,90 @@ const ProductDetails = ({setCart , setWishlist}) => {
 
           {/* Action Buttons */}
           <div className="flex space-x-4 mt-6">
+
             <button className="flex-1 flex items-center justify-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105">
-              <ShoppingCart className="mr-2" /> Buy Now
+             Buy Now
             </button>
-            <button className="flex-1 flex items-center justify-center bg-gray-100 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-200 transition duration-300 ease-in-out transform hover:scale-105">
-              <Heart className="mr-2" /> Add to Wishlist
+{/* 
+            <button 
+            onClick={(e) => handleAddToCart(product , e)}
+            className="
+            flex-1 
+            flex items-center 
+            justify-center
+             px-4 
+              py-2 
+              border-2 
+              border-blue-500 
+              text-blue-500 
+              rounded-lg 
+              transition 
+              duration-300 
+              ease-in-out 
+              text-center 
+              font-semibold 
+              uppercase 
+              tracking-wider 
+              hover:shadow-md 
+              focus:outline-none 
+              focus:ring-2 
+              focus:ring-blue-500 
+              focus:ring-opacity-50">
+            <ShoppingCart className="mr-2" /> {isProductInCart ? "Go To Cart" : "Add To Cart"}
+            </button> */}
+
+            {isProductInCart(product._id) ? (
+            <button
+              onClick={handleNavigateToCart}
+              to="/cart"
+              className="
+               flex-1 flex items-center justify-center 
+                        px-6 
+                        py-3 
+                        bg-transparent 
+                        border-2 
+                        border-blue-500 
+                        text-blue-500
+                        rounded-lg 
+                        font-semibold 
+                        uppercase 
+                        tracking-wider 
+                        transition 
+                        duration-300 
+                        ease-in-out 
+                        transform 
+                        focus:outline-none 
+                      "
+            >
+           <ShoppingCart className="mr-2" />    Go To Cart
             </button>
+          ) : (
+            <button
+              onClick={(e) => handleAddToCart(product, e)}
+              className="
+            flex-1 flex items-center justify-center px-4 
+              py-2 
+              border-2 
+              border-blue-500 
+              text-blue-500 
+              rounded-lg 
+              transition 
+              duration-300 
+              ease-in-out 
+              text-center 
+              font-semibold 
+              uppercase 
+              tracking-wider 
+              hover:shadow-md 
+              focus:outline-none 
+              focus:ring-2 
+              focus:ring-blue-500 
+              focus:ring-opacity-50
+            "
+            >
+              <ShoppingCart className="mr-2" /> Add to Cart
+            </button>
+          )}
           </div>
         </div>
 
@@ -178,7 +261,15 @@ const ProductDetails = ({setCart , setWishlist}) => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {relatedProducts?.map((product) => (
-            <ProductCard key={product._id} setWishlist={setWishlist} product={product} setCart={setCart}/>
+            <ProductCard 
+            key={product._id} 
+            product={product}
+            handleAddToCart={handleAddToCart}
+            handleAddToWishlist={handleAddToWishlist}   
+            isProductInCart={isProductInCart}
+
+            isProductInWishlist={isProductInWishlist}
+            />
           ))}
         </div>
       </div>
