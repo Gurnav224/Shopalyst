@@ -6,7 +6,7 @@ import { FaStar } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 
-const ProductList = ({ setCart , setWishlist }) => {
+const ProductList = ({ handleAddToCart, handleAddToWishlist,  isProductInCart , isProductInWishlist, handleNavigateToCart}) => {
   const [defaultProducts, setDefaultProducts] = useState([]); // original product list
   const [products, setProducts] = useState([]); // displayed products
   const [ratings, setRatings] = useState(0);
@@ -14,6 +14,7 @@ const ProductList = ({ setCart , setWishlist }) => {
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [clearCheckbox, setClearCheckbox] = useState(false);
   const [selectedSort, setSelectedSort] = useState("");
+
 
   const { category: categoryByParams } = useParams();
 
@@ -212,7 +213,15 @@ const ProductList = ({ setCart , setWishlist }) => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProducts.map((product) => (
-                <ProductCard key={product._id} product={product}  setCart={setCart} setWishlist={setWishlist}/>
+                <ProductCard 
+                key={product._id} 
+                product={product}
+                handleAddToCart={handleAddToCart}
+                handleAddToWishlist={handleAddToWishlist}    
+                isProductInCart={isProductInCart}
+                handleNavigateToCart={handleNavigateToCart}
+                isProductInWishlist={isProductInWishlist}
+                 />
               ))}
             </div>
           </div>
