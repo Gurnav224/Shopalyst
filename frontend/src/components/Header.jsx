@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Search, User, Heart, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const Header = ({cart}) => {
+const Header = ({cart , wishlist}) => {
   const [searchQuery, setSearchQuery] = useState('');
   return (
     <header >
@@ -38,8 +38,11 @@ const Header = ({cart}) => {
 
       {/* User Actions */}
       <div className="flex items-center space-x-4">
-        <Link to='/wishlist' className="hover:bg-gray-100 p-2 rounded-full">
+        <Link to='/wishlist' className="hover:bg-gray-100 p-2 rounded-full relative">
           <Heart className="text-gray-700" size={24} />
+          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-1">
+            {wishlist.length}
+          </span>
         </Link>
         <button className="hover:bg-gray-100 p-2 rounded-full">
           <User className="text-gray-700" size={24} />
