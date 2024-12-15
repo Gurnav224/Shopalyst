@@ -30,11 +30,12 @@ const categoryJson = JSON.parse(categoryData);
                 price:data.price,
                 rating:data.rating,
                 category:data.category,
-                brand:data.brand
+                brand:data.brand,
+                quantity:1
             })
             const savedProduct = await newproduct.save();
     
-            console.log('product name',savedProduct.name)
+            console.log('product name',savedProduct.name,savedProduct.quantity)
         } catch (error) {
             console.error('error saved product ',error)
         }
@@ -43,7 +44,7 @@ const categoryJson = JSON.parse(categoryData);
     mongoose.connection.close()
  }
 
-//  seedDatabase()
+ seedDatabase()
 
 
 async function seedCategory(){
