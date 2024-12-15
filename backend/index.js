@@ -1,202 +1,68 @@
 const express = require("express");
 const connetDB = require("./database/conn");
-const {config} = require('dotenv');
-const { Product } = require("./models/product.model");
-const cors = require('cors');
-const Category = require("./models/category.model");
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
 
 
+const { config } = require("dotenv");
 
-config({path:'./.env'});
+const cors = require("cors");
+const morgan = require("morgan");
 
+const productRouter = require("./routes/product.route");
+const categoryRouter = require("./routes/category.route");
+const cartRouter = require("./routes/cart.route");
 
+config({ path: "./.env" });
 
 const app = express();
 
-app.use(cors({
-  origin:"*",
-  credentials:true,
-  optionsSuccessStatus:200
+app.use(
+  cors({
+    origin: "*",
+    credentials: true,
+    optionsSuccessStatus: 200,
+  })
+);
+
+app.use(session({
+  secret:'my_key',
+  resave:false,
+  saveUninitialized:false,
+  store:MongoStore.create({
+    mongoUrl:process.env.MONGODB,
+    ttl:60*60*24
+  })
 }))
 
-app.use(express.json())
 
+app.use(express.json());
+app.use(morgan("dev"));
 
 app.get("/", (req, res) => {
   res.send("ecommerce backend is running");
 });
 
+// products routes
+app.use("/api", productRouter);
 
+// category routes
+app.use("/api", categoryRouter);
 
-// API => GET ALL THE PRODUCTS 
+//cart routes
+app.use("/api", cartRouter)
 
-async function getAllProducts(){
-  try {
-    const products = await Product.find({});
-    return products;
-  } catch (error) {
-    console.error('failed to get all products from db',error)
-  }
-}
-
-app.get('/api/products', async (req , res) => {
-  try {
-    const products = await getAllProducts();
-
-    if(products.length !== 0) {
-      res.status(200).json({message:'get all the products',data:{products}})
-    }
-    else{
-      res.status(400).json({error:'no products found'})
-    }
-
-  } catch (error) {
-    console.error('error getting products',error);
-    res.status(500).json({error:'server error'})
-  }
-})
-
-// API => GET SINGLE PRODUCT
-
-async function getSingleProduct(id){
-  try {
-    const product = await Product.findById(id);
-   return product;
-  } catch (error) {
-    console.error('failed to get single product',error)
-  }
-}
-
-app.get('/api/products/:id', async (req , res) => {
-  const {id} = req.params;
-  try {
-    const product  = await getSingleProduct(id);
-
-    if(product){
-      res.status(200).json({message:'get product by id',data:{
-        product
-      }})
-    }
-    else{
-      res.status(400).json({error:'product not found'})
-    }
-  } catch (error) {
-    res.status(500).json({message:'error to get single product'})
-  }
-})
-
-app.put('/api/products/updateQuantity/:id', async (req , res) => {
-  const {id} = req.params;
-  const {quantity} = req.body;
-  console.log(id,quantity)
-  try {
-    const updateProductQuantity = await Product.findByIdAndUpdate(id,{quantity},{new:true});
-    res.status(200).json({message:"product updated successfully",updateProductQuantity})
-  } catch (error) {
-    res.status(500).json({error:'failed to update product quantity'})
-  }
-})
-
-
-app.get('/api/products/category/:category', async (req , res) => {
-  const {category} = req.params;
-  try {
-    const products = await Product.find({category:category});
-    if(products.length === 0) {
-      return res.status(404).json({message:"failed to get related category"})
-    }
-    res.status(200).json({message:"get product by related category",products})
-  } catch (error) {
-    console.error('failed get category related product');
-    res.status(500).json({message:"failed get category related product"})
-  }
-})
-
-// API => GET PRODUCT BY SELECTED CATEGORY
-
-
-app.get('/api/products/categories/:category', async (req ,res) => {
-  const { category} = req.params;
-  try {
-      const products = await Product.find({category});
-      res.status(200).json(products);
-  } catch (error) {
-    console.error('error getting product by id', error);
-    res.status(500).json({message:'error occured while getting product by id'});
-  }
-})
-
-
-
-// API => GET ALL THE CATEGORIES
-
-
-async function getAllCategories(){
-  try {
-    const categories = await Category.find();
-    return categories
-  } catch (error) {
-    console.error('error to get Categories',error)
-  }
-}
-
-app.get('/api/categories',async (req , res) => {
-  try {
-    const categories = await getAllCategories();
-    if(categories.length !== 0 ){
-      res.status(200).json({data:{categories}})
-    }
-    else{
-      res.status(400).json({error:'no categories not found'})
-    }
-  } catch (error) {
-    console.error('failed to get categories',error)
-    res.status(500).json({error:'server error'})
-  }
-})
-
-
-// API => GET CATEGORY BY ID
-
-async function getCategoryById(id){
-  try {
-    const category = await Category.findById(id);
-    return category
-  } catch (error) {
-    console.error('failed to get category by id',error)
-  }
-}
-
-app.get('/api/categories/:id' , async (req , res) => {
-  const {id} = req.params;
-  try {
-    const category = await getCategoryById(id);
-    if(category){
-      res.status(200).json({data:{category}})
-    }
-    else{
-      res.status(400).json({data:{category}})
-    }
-  } catch (error) {
-    console.error('failed to get category by id',error)
-    res.status(500).json({error:'server error'})
-  }
-})
-
-
-const PORT =  process.env.PORT || 5000
+const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
-    await connetDB()
+    await connetDB();
     app.listen(PORT, () => {
       console.log(`server running on port ${PORT}`);
     });
-    
   } catch (error) {
-    console.error('failed to start the server')
+    console.error("failed to start the server");
   }
-}
+};
 
-
-startServer()
+startServer();
