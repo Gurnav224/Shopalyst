@@ -9,9 +9,11 @@ const { config } = require("dotenv");
 const cors = require("cors");
 const morgan = require("morgan");
 
+const userRouter = require('./routes/user.route');
 const productRouter = require("./routes/product.route");
 const categoryRouter = require("./routes/category.route");
 const cartRouter = require("./routes/cart.route");
+const wishlistRouter = require("./routes/wishlist.route");
 
 config({ path: "./.env" });
 
@@ -32,7 +34,8 @@ app.use(session({
   store:MongoStore.create({
     mongoUrl:process.env.MONGODB,
     ttl:60*60*24
-  })
+  }),
+  cookie:{secure:false}
 }))
 
 
@@ -43,6 +46,11 @@ app.get("/", (req, res) => {
   res.send("ecommerce backend is running");
 });
 
+// user routes
+
+app.use('/api', userRouter );
+
+
 // products routes
 app.use("/api", productRouter);
 
@@ -50,7 +58,10 @@ app.use("/api", productRouter);
 app.use("/api", categoryRouter);
 
 //cart routes
-app.use("/api", cartRouter)
+app.use("/api", cartRouter);
+
+// wishlist routes;
+app.use("/api" , wishlistRouter);
 
 const PORT = process.env.PORT || 5000;
 

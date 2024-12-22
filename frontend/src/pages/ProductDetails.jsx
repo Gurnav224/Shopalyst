@@ -34,8 +34,8 @@ const ProductDetails = ({ handleAddToCart, handleAddToWishlist, isProductInCart 
 
   useEffect(() => {
     const fetchProductById = async () => {
-      const product = await api.getProductById(productId);
-      setProduct(product.data.product);
+      const product = await api?.getProductById(productId);
+      setProduct(product?.product);
     };
     fetchProductById();
   }, [productId]);
@@ -53,7 +53,7 @@ const ProductDetails = ({ handleAddToCart, handleAddToWishlist, isProductInCart 
   useEffect(() => {
     const fetchCategoriesProduct = async () => {
       try {
-        const data = await api.relatedCategoryProducts(product?.category);
+        const data = await api?.relatedCategoryProducts(product?.category);
         setRelatedProducts(data?.products);
       } catch (error) {
         console.error("failed to get related category product", error);
