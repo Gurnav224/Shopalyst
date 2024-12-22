@@ -6,6 +6,9 @@ const Wishlist = ({
   handleRemoveProductFromWishlist,
   handleAddToCart,
 }) => {
+
+  console.log('wishlist page ', wishlist)
+
   return (
     <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
       <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-8 text-gray-800 text-center">
@@ -23,9 +26,9 @@ const Wishlist = ({
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {wishlist.map((product) => (
+          {wishlist?.map((item) => (
             <div 
-              key={product._id} 
+              key={item._id} 
               className="
                 bg-white 
                 rounded-xl 
@@ -50,8 +53,8 @@ const Wishlist = ({
               </div>
              
                 <img
-                  src={product.thumbnail}
-                  alt={product.name}
+                  src={item?.thumbnail}
+                  alt={item?.product?.name}
                   className="
                     w-full 
                     h-48 
@@ -60,7 +63,7 @@ const Wishlist = ({
                     transition 
                   "
                 />
-                {product.discount && (
+                {/* {item.product.discount && (
                   <span className="
                     absolute 
                     top-2 
@@ -72,30 +75,33 @@ const Wishlist = ({
                     rounded-full 
                     text-xs
                   ">
-                    {product.discount}% OFF
+                    {item.product.discount}% OFF
                   </span>
-                )}
+                )} */}
               </div>
 
               {/* Product Details */}
               <div className="p-4">
                 <h2 className="text-lg font-semibold text-gray-800 truncate">
-                  {product.name}
+                  {item?.product?.name}
                 </h2>
                 <p className="text-sm text-gray-500 mb-2">
-                  {product.brand}
+                  {item?.product?.brand}
+                </p>
+                <p className="text-sm text-gray-500 mb-2">
+                  Quantity: {item.quantity}
                 </p>
                 
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-xl font-bold text-gray-900">
-                    ${product.price.toLocaleString()}
+                    ${item.price.toLocaleString()}
                   </span>
                 </div>
 
                 {/* Action Buttons */}
                 <div className="flex space-x-2">
                   <button
-                    onClick={(e) => handleAddToCart(product, e)}
+                    onClick={(e) => handleAddToCart(item, e)}
                     className="
                       flex-1 
                       flex 
@@ -123,7 +129,7 @@ const Wishlist = ({
                   </button>
                   
                   <button
-                    onClick={() => handleRemoveProductFromWishlist(product._id)}
+                    onClick={() => handleRemoveProductFromWishlist(item?.product?._id)}
                     className="
                       flex 
                       items-center 
