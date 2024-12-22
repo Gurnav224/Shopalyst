@@ -20,6 +20,10 @@ const wishlistSchema = new Schema({
         required:true,
         min:1,
       },
+      thumbnail:{
+        type:String,
+        required:true
+      },
       price:{
         type:Number,
         required:true
