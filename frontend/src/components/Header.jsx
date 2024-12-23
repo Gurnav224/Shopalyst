@@ -2,9 +2,11 @@
 import { useState } from 'react';
 import { Search, User, Heart, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Header = ({cart , wishlist}) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const { user , logout } = useAuth();
   return (
     <header >
        <nav className="bg-slate-50 shadow-md py-4 px-6 flex items-center justify-between">
@@ -38,15 +40,24 @@ const Header = ({cart , wishlist}) => {
 
       {/* User Actions */}
       <div className="flex items-center space-x-4">
+      
+      <Link to='/login' className='bg-gray-100 p-2 rounded-md' >
+          Login
+       </Link>
+       <Link to='/signup' className='bg-gray-100 p-2 rounded-md' >
+          Signup
+       </Link>
         <Link to='/wishlist' className="hover:bg-gray-100 p-2 rounded-full relative">
           <Heart className="text-gray-700" size={24} />
           <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-1">
             {wishlist.length}
           </span>
         </Link>
-        <button className="hover:bg-gray-100 p-2 rounded-full">
-          <User className="text-gray-700" size={24} />
-        </button>
+        <Link to='/profile' className="hover:bg-gray-100 p-2 rounded-full">
+          <User className="text-gray-700" size={24} /> 
+          {user ? user.name : 'login'}
+        </Link>
+          <button onClick={() => logout()}>logout</button>
         <Link to="/cart" className="hover:bg-gray-100 p-2 rounded-full relative">
           <ShoppingCart className="text-gray-700" size={24} />
           <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-1">

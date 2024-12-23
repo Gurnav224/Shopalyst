@@ -30,7 +30,7 @@ const ProductCard = ({
               onClick={(e) => handleAddToWishlist(product, e)}
               className="bg-white/70 p-2 rounded-full hover:bg-white/90 transition-all"
             >
-              {isProductInWishlist(product._id) ? (
+              {isProductInWishlist(product?._id) ? (
                 <Heart className="w-5 h-5  fill-red-500 text-red-500" />
               ) : (
                 <Heart className="w-5 h-5 text-gray-700 hover:fill-red-500 hover:text-red-500" />
@@ -61,18 +61,21 @@ const ProductCard = ({
               onClick={handleNavigateToCart}
               to="/cart"
               className="
-               flex-1 flex items-center justify-center w-full
+               flex-1
+                flex 
+                items-center 
+                justify-center 
+                w-full
                         px-6 
                         py-3 
-                        bg-transparent 
                         border-2 
                         border-blue-500 
                         text-white 
                         rounded-lg 
+                        bg-blue-600
                         font-semibold 
                         uppercase 
                         tracking-wider 
-                        bg-blue-500 
                         transition 
                         duration-300 
                         ease-in-out 
