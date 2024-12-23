@@ -1,5 +1,5 @@
 import Home from "./pages/Home";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import ProductList from "./pages/ProductList";
 import ProductDetails from "./pages/ProductDetails";
@@ -15,40 +15,114 @@ import api from "./api/api";
 function App() {
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
+  const [totalCart, setTotalCart] = useState(0);
 
-  const handleAddToCart = (product, e) => {
+  const handleAddToCart = async (product, e) => {
     // Stop event propagation to prevent link navigation
     e.stopPropagation();
     e.preventDefault();
     //exiting product cart ;
 
-    if (isProductInCart(product._id)) {
-      alert("Product is already in the cart!");
-      return;
-    }
+    const { _id } = product;
 
     // implement add to cart logic
     setCart((prev) => [...prev, product]);
-    console.log("Added to cart:", product);
+    // console.log("Added to cart:", product);
+
+    try {
+      const response = await api.addTOCart(_id, 1);
+      const items = response?.cart?.items;
+      setCart([...items]);
+    } catch (error) {
+      console.error("failed to add to cart", error);
+    }
   };
 
-  const fetchWishlist = async () => {
+  const removeItemFromCart = async (productId) => {
+    const previousCartList = [...cart];
+
+    setCart((prev) => prev.filter((item) => item.product._id !== productId));
+
     try {
-      setWishlist((prev) => (prev.length ? prev : []));
-
-      const {
-        wishlist: { items },
-      } = await api.getItemFromWishlist();
-
-      setWishlist([...items]);
+      console.log(productId);
+      const response = await api.removeItemFromCart(productId);
+      console.log(response);
+      if (response.message !== "item from remove from cart successfully") {
+        console.error("faile to remove item from the cart");
+        setCart(previousCartList);
+      }
     } catch (error) {
-      console.error("Error fetching wishlist:", error);
+      console.error("failed to remove product", error);
+
+      setCart(previousCartList);
+    }
+  };
+
+  const fetchCart = useCallback(async () => {
+    try {
+      const {
+        cart: { items },
+        cart,
+      } = await api.fetchCart();
+
+      setCart(items);
+      setTotalCart(cart.totalAmount);
+    } catch (error) {
+      console.error("Error while fetching cart", error);
+      setCart([]);
+    }
+  }, []);
+
+  const isProductInCart = (productId) => {
+    return cart.some((item) => item?.product?._id === productId);
+  };
+
+  const updateQuantity = async (product, action) => {
+    const existingProduct = cart.find((item) => item._id === product._id);
+    const previousCartList = [...wishlist];
+
+    const updatedCartList = existingProduct
+      ? cart.map((item) => {
+          return item.product._id === product.product._id
+            ? action === "increase"
+              ? { ...item, quantity: item.quantity + 1 }
+              : { ...item, quantity: item.quantity - 1 }
+            : item;
+        })
+      : [...cart, { ...product, quantity: 1 }];
+
+    try {
+      setCart(updatedCartList);
+
+      // console.log(product.product._id)
+
+      await api.updateCartItemQuantity(product.product._id, action);
+    } catch (error) {
+      console.error("failed to update item quantity", error);
+      setCart(previousCartList);
     }
   };
 
   useEffect(() => {
-    fetchWishlist();
+    fetchCart();
+  }, [fetchCart]);
+
+  const fetchWishlist = useCallback(async () => {
+    try {
+      const {
+        wishlist: { items },
+      } = await api.getItemFromWishlist();
+
+      setWishlist(items);
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
+      setWishlist([]);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchWishlist();
+  }, [fetchWishlist]);
 
   const isProductInWishlist = (productId) => {
     return wishlist.some((item) => {
@@ -59,13 +133,13 @@ function App() {
   const handleAddToWishlist = async (product, e) => {
     e.stopPropagation();
     e.preventDefault();
-  
-    const { _id } = product; // Destructure product for easier access
+
+    const { _id } = product;
     const previousWishlist = [...wishlist]; // Backup current state
-  
+
     // Check if the product is already in the wishlist
     const existingProduct = wishlist.find((item) => item?.product?._id === _id);
-  
+
     // Create updated wishlist state
     const updatedWishlist = existingProduct
       ? wishlist.map((item) =>
@@ -74,33 +148,26 @@ function App() {
             : item
         )
       : [...wishlist, { ...product, quantity: 1 }];
-  
-    setWishlist(updatedWishlist); // Optimistically update the state
-  
+
+    setWishlist(updatedWishlist);
+
     try {
       // API call to update the wishlist on the server
       const response = await api.AddToWishlist(_id, 1);
-  
+
       // Validate the API response
       if (!response || response.message !== "Product added to wishlist") {
         throw new Error(response?.message || "Unknown server error");
       }
-  
+
       // Refresh the wishlist from the server
       await fetchWishlist();
     } catch (error) {
       console.error("Failed to add item to the wishlist:", error);
-  
+
       // Revert state to the previous backup
       setWishlist(previousWishlist);
-    } finally {
-      console.log("Add to wishlist attempt completed for:", product);
     }
-  };
-  
-  
-  const isProductInCart = (productId) => {
-    return cart.some((item) => item._id === productId);
   };
 
   const handleRemoveProductFromWishlist = async (productId) => {
@@ -115,7 +182,6 @@ function App() {
     try {
       // Make the API call
       const response = await api.removeFromWishlist(productId);
-      console.log("respnose", response);
 
       // If the API call fails, revert the state
       if (response.message !== "product remove the wishlist") {
@@ -182,7 +248,20 @@ function App() {
         </Route>
 
         <Route path="/cart" element={<PrivateRoute />}>
-          <Route index element={<Cart cart={cart} />} />
+          <Route
+            index
+            element={
+              <Cart
+                cart={cart}
+                removeItemFromCart={removeItemFromCart}
+                totalCart={totalCart}
+                fetchCart={fetchCart}
+                updateQuantity={updateQuantity}
+                handleAddToWishlist={handleAddToWishlist}
+                isProductInWishlist={isProductInWishlist}
+              />
+            }
+          />
         </Route>
 
         <Route path="/wishlist">
