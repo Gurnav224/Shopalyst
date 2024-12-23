@@ -6,7 +6,13 @@ import { FaStar } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 
-const ProductList = ({ handleAddToCart, handleAddToWishlist,  isProductInCart , isProductInWishlist, handleNavigateToCart}) => {
+const ProductList = ({
+  handleAddToCart,
+  handleAddToWishlist,
+  isProductInCart,
+  isProductInWishlist,
+  handleNavigateToCart,
+}) => {
   const [defaultProducts, setDefaultProducts] = useState([]); // original product list
   const [products, setProducts] = useState([]); // displayed products
   const [ratings, setRatings] = useState(0);
@@ -14,7 +20,6 @@ const ProductList = ({ handleAddToCart, handleAddToWishlist,  isProductInCart , 
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [clearCheckbox, setClearCheckbox] = useState(false);
   const [selectedSort, setSelectedSort] = useState("");
-
 
   const { category: categoryByParams } = useParams();
 
@@ -24,17 +29,17 @@ const ProductList = ({ handleAddToCart, handleAddToWishlist,  isProductInCart , 
     }
   }, [categoryByParams]);
 
-  useEffect(() => {
-    async function fetchProducts() {
-      try {
-        const products = await api.getAllProducts();
-        setDefaultProducts(products?.data?.products); // save original data
-        setProducts(products?.data?.products); // set displayed data
-      } catch (error) {
-        console.error("Error fetching products", error);
-      }
+  async function fetchProducts() {
+    try {
+      const products = await api.getAllProducts();
+      setDefaultProducts(products?.products); // save original data
+      setProducts(products?.products); // set displayed data
+    } catch (error) {
+      console.error("Error fetching products", error);
     }
+  }
 
+  useEffect(() => {
     fetchProducts();
   }, []);
 
@@ -62,7 +67,7 @@ const ProductList = ({ handleAddToCart, handleAddToWishlist,  isProductInCart , 
     }
   };
 
-  const filteredProducts = products.filter((product) => {
+  const filteredProducts = products?.filter((product) => {
     const rating = ratings > 0 ? product.rating <= ratings : true;
 
     const categoryFilter =
@@ -207,21 +212,21 @@ const ProductList = ({ handleAddToCart, handleAddToWishlist,  isProductInCart , 
             <div className="flex items-center justify-between mb-6">
               <h5 className="text-2xl font-semibold">Showing All Products</h5>
               <span className="text-gray-500">
-                (Showing {filteredProducts.length} products)
+                (Showing {filteredProducts?.length} products)
               </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProducts.map((product) => (
-                <ProductCard 
-                key={product._id} 
-                product={product}
-                handleAddToCart={handleAddToCart}
-                handleAddToWishlist={handleAddToWishlist}    
-                isProductInCart={isProductInCart}
-                handleNavigateToCart={handleNavigateToCart}
-                isProductInWishlist={isProductInWishlist}
-                 />
+              {filteredProducts?.map((product) => (
+                <ProductCard
+                  key={product._id}
+                  product={product}
+                  handleAddToCart={handleAddToCart}
+                  handleAddToWishlist={handleAddToWishlist}
+                  isProductInCart={isProductInCart}
+                  handleNavigateToCart={handleNavigateToCart}
+                  isProductInWishlist={isProductInWishlist}
+                />
               ))}
             </div>
           </div>
