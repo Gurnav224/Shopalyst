@@ -7,12 +7,12 @@ const Wishlist = ({
   handleAddToCart,
 }) => {
 
-  console.log('wishlist page ', wishlist)
+
 
   return (
     <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
       <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-8 text-gray-800 text-center">
-        My Wishlist
+        My Wishlist ({wishlist.length || 0})
       </h1>
       
       {wishlist.length === 0 ? (
@@ -101,7 +101,7 @@ const Wishlist = ({
                 {/* Action Buttons */}
                 <div className="flex space-x-2">
                   <button
-                    onClick={(e) => handleAddToCart(item, e)}
+                    onClick={(e) => handleAddToCart(item?.product, e)}
                     className="
                       flex-1 
                       flex 
