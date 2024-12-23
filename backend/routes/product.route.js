@@ -4,14 +4,14 @@ const {
   getSingleProduct,
   updateProductQuantity,
   getProductsByCategory,
-  getProductsBySelectedCategory,
 } = require("../controllers/product.controller");
+const auth = require('../middlewares/auth')
 const router = express.Router();
 
-router.get("/products", getAllProducts);
-router.get("/products/:id", getSingleProduct);
-router.put("/products/updateQuantity/:id", updateProductQuantity);
-router.get("/products/category/:category", getProductsByCategory);
+router.get("/products", auth, getAllProducts);
+router.get("/products/:id", auth, getSingleProduct);
+router.put("/products/updateQuantity/:id", auth, updateProductQuantity);
+router.get("/products/category/:category", auth, getProductsByCategory);
 
 
 module.exports = router;
