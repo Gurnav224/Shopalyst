@@ -32,6 +32,7 @@ exports.addToCart = async (req, res) => {
     await cart.save();
     await cart.populate("items.product");
 
+
     res
       .status(200)
       .json({ message: "Product successfully added to cart", cart });
@@ -58,9 +59,10 @@ exports.removeFromCart = async (req, res) => {
     await cart.save();
     await cart.populate("items.product");
 
+
     res
       .status(200)
-      .json({ message: "product remove from cart successfully", cart });
+      .json({ message: "item from remove from cart successfully", cart });
   } catch (error) {
     console.error("Failed to remove the product from cart:", error);
     res.status(500).json({ error: "Failed to remove product from cart" });
@@ -69,13 +71,15 @@ exports.removeFromCart = async (req, res) => {
 
 exports.viewCart = async (req, res) => {
   try {
-    const cart = await Cart.find({ user: req.user._id }).populate(
+    const cart = await Cart.findOne({ user: req.user._id }).populate(
       "items.product"
     );
 
     if (!cart) {
       return res.status(400).json({ error: "Empty cart" });
     }
+
+
 
     res.status(200).json({ message: "Cart items", cart });
   } catch (error) {

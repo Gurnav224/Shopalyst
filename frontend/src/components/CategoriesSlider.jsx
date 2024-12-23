@@ -4,9 +4,13 @@ import { Link } from "react-router-dom";
 function CategoriesSlider({ categories }) {
   return (
     <div className="overflow-x-auto whitespace-nowrap py-4">
-      <div className="flex space-x-4">
-        {categories.map((category) => (
-          <Link to={`/products/${category.name}`} key={category._id} className="flex-none w-48">
+      <div className="flex space-x-4 justify-center">
+        {categories?.slice(4).map((category) => (
+          <Link
+            to={`/products/${category.name}`}
+            key={category._id}
+            className="flex-none w-48"
+          >
             <div className="relative rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105">
               <img
                 src={category.categoryImgUrl}

@@ -2,32 +2,31 @@ const baseUrl = "http://localhost:3000/api";
 
 const token = localStorage.getItem("token");
 
-
 const api = {
   getFeaturedCategory: async () => {
-    const response = await fetch(`${baseUrl}/categories`,{
-      method:'GET',
-      headers:{
-        Authorization:'Bearer '+ token
-      }
+    const response = await fetch(`${baseUrl}/categories`, {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + token,
+      },
     });
     return response.json();
   },
   getAllProducts: async () => {
-    const response = await fetch(`${baseUrl}/products`,{
-      method:'GET',
-      headers:{
-        Authorization:'Bearer '+ token
-      }
+    const response = await fetch(`${baseUrl}/products`, {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + token,
+      },
     });
     return response.json();
   },
   getProductById: async (productId) => {
-    const response = await fetch(`${baseUrl}/products/${productId}`,{
-      method:'GET',
-      headers:{
-        Authorization:'Bearer '+ token
-      }
+    const response = await fetch(`${baseUrl}/products/${productId}`, {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + token,
+      },
     });
     return response.json();
   },
@@ -38,7 +37,7 @@ const api = {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization:"Bearer " + token
+          Authorization: "Bearer " + token,
         },
         body: JSON.stringify({ quantity: updatedQuantity }),
       }
@@ -46,11 +45,11 @@ const api = {
     return response.json();
   },
   relatedCategoryProducts: async (category) => {
-    const response = await fetch(`${baseUrl}/products/category/${category}`,{
-      method:'GET',
-      headers:{
-        Authorization:'Bearer '+ token
-      }
+    const response = await fetch(`${baseUrl}/products/category/${category}`, {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + token,
+      },
     });
     return response.json();
   },
@@ -58,7 +57,6 @@ const api = {
   /*
    Wishlist API
   */
-
 
   AddToWishlist: async (productId, quantity) => {
     const response = await fetch(`${baseUrl}/wishlist`, {
@@ -72,30 +70,73 @@ const api = {
     return response.json();
   },
   getItemFromWishlist: async () => {
-    const response = await fetch(`${baseUrl}/wishlist`,{
-      headers:{
-        Authorization:'Bearer '+ token
-      }
+    const response = await fetch(`${baseUrl}/wishlist`, {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
     });
-    return response.json()
+    return response.json();
   },
   removeFromWishlist: async (productId) => {
-    const response = await fetch(`${baseUrl}/wishlist`,{
-      method:"DELETE",
+    const response = await fetch(`${baseUrl}/wishlist`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({ productId }),
+    });
+    return response.json();
+  },
+
+  /*
+   Cart API
+  */
+
+  addTOCart: async (productId, quantity) => {
+    const response = await fetch(`${baseUrl}/cart`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({ productId, quantity }),
+    });
+    return response.json();
+  },
+
+  fetchCart: async () => {
+    const response = await fetch(`${baseUrl}/cart`, {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    });
+    return response.json();
+  },
+  removeItemFromCart: async (productId) => {
+    const response = await fetch(`${baseUrl}/cart`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({ productId }),
+    });
+
+    return response.json();
+  },
+
+  updateCartItemQuantity: async  (productId, action) => {
+    const response = await fetch(`${baseUrl}/cart/update`, {
+      method:"PUT",
       headers:{
-        "Content-Type":'application/json',
+        "Content-Type":"application/json",
         Authorization:"Bearer "+ token
       },
-      body:JSON.stringify({productId})
+      body:JSON.stringify({productId, action})
     });
     return response.json()
   }
-
-   /*
-   Wishlist API
-  */
-
-   
 };
 
 export default api;
