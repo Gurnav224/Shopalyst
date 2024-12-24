@@ -1,5 +1,6 @@
 const Cart = require("../models/cart.model");
 const Product = require("../models/product.model");
+const User = require("../models/user.model");
 
 exports.addToCart = async (req, res) => {
   const { productId, quantity } = req.body;
@@ -14,6 +15,15 @@ exports.addToCart = async (req, res) => {
     if (!cart) {
       cart = new Cart({ user: req.user._id, items: [] });
     }
+
+    // add cart to user
+    const user = await User.findByIdAndUpdate(
+      { _id: req.user._id },
+      { $push: { cart: cart._id } },
+      { new: true }
+    );
+
+    await user.save();
 
     const exitingItem = cart.items.find(
       (item) => item.product.toString() === productId
@@ -31,7 +41,6 @@ exports.addToCart = async (req, res) => {
 
     await cart.save();
     await cart.populate("items.product");
-
 
     res
       .status(200)
@@ -56,9 +65,15 @@ exports.removeFromCart = async (req, res) => {
       (item) => item.product.toString() !== productId
     );
 
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { $pull: { cart: cart._id } },
+      { new: true }
+    );
+
+    await user.save();
     await cart.save();
     await cart.populate("items.product");
-
 
     res
       .status(200)
@@ -78,8 +93,6 @@ exports.viewCart = async (req, res) => {
     if (!cart) {
       return res.status(400).json({ error: "Empty cart" });
     }
-
-
 
     res.status(200).json({ message: "Cart items", cart });
   } catch (error) {
@@ -123,7 +136,7 @@ exports.updateQuantity = async (req, res) => {
           (item) => item.product.toString() !== productId
         );
       } else {
-        cartItem.quantity -= 1;
+        cartItem.quantity -= 1
       }
     }
 
