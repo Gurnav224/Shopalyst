@@ -14,8 +14,9 @@ const productRouter = require("./routes/product.route");
 const categoryRouter = require("./routes/category.route");
 const cartRouter = require("./routes/cart.route");
 const wishlistRouter = require("./routes/wishlist.route");
+const addressRouter = require('./routes/address.route');
 
-config({ path: "./.env" });
+config({ path: ".env" });
 
 const app = express();
 
@@ -62,6 +63,9 @@ app.use("/api", cartRouter);
 
 // wishlist routes;
 app.use("/api" , wishlistRouter);
+
+// address routes
+app.use('/api', addressRouter)
 
 const PORT = process.env.PORT || 5000;
 
