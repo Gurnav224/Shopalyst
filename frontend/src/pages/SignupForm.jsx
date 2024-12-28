@@ -44,7 +44,7 @@ const SignForm = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
+                placeholder="username"
               />
             </div>
             <div>
