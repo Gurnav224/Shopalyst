@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import {  Heart, Minus, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 
 const Cart = ({
   cart,
@@ -13,13 +14,13 @@ const Cart = ({
   isProductInWishlist
 }) => {
 
-  const totalPrice = cart.reduce( (sum, item) => sum + item.price * item.quantity, 0 );
+  const totalPrice = cart.reduce( (sum, item) => sum + item.price * item.quantity, 0 ) 
 
   useEffect(() => {
     if (cart?.length > 0) {
       fetchCart();
     }
-  }, [fetchCart, cart?.length]);
+  }, [fetchCart , cart?.length]);
 
 
   return (
@@ -28,6 +29,7 @@ const Cart = ({
         <h2 className="text-2xl font-bold mb-6">
           MY CART ({cart?.length || 0})
         </h2>
+        <ToastContainer/>
 
         {cart?.length === 0 ? (
           <p className="text-gray-600 text-center">Your cart is empty.</p>
@@ -50,7 +52,7 @@ const Cart = ({
                     </div>
                     <div className="flex-1 space-y-4">
                       <h3 className="text-xl font-medium">
-                        {item.product.name}
+                        {item.product?.name}
                       </h3>
                       <div className="flex items-center gap-3">
                         <span className="text-2xl font-semibold">
@@ -122,7 +124,7 @@ const Cart = ({
               <div className="space-y-3 border-b pb-4 mb-4">
                 <div className="flex justify-between">
                   <span>Price ({cart?.length || 0} item)</span>
-                  <span>${totalPrice ||totalCart}</span>
+                  <span>${totalPrice.toLocaleString() || totalCart.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-green-600">
                   <span>Discount</span>
@@ -141,9 +143,9 @@ const Cart = ({
               <p className="text-green-600 mb-4">
                 You will save $1000 on this order
               </p>
-              <button className="w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+              <Link to='/address' className="w-full block text-center  py-3 bg-blue-500 text-white  rounded-lg hover:bg-blue-600 transition-colors">
                 PLACE ORDER
-              </button>
+              </Link>
             </div>
           </div>
         )}
