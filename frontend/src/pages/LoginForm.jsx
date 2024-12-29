@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer , toast} from "react-toastify";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("user1@gmail.com");
@@ -12,8 +13,11 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    toast('user login successfully ')
+
     try {
       await login(email, password);
+
       navigate('/products')
 
     } catch (error) {
@@ -23,6 +27,7 @@ const LoginForm = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <ToastContainer/>
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
