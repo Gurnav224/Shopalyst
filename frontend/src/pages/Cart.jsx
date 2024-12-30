@@ -14,7 +14,7 @@ const Cart = ({
   isProductInWishlist
 }) => {
 
-  const totalPrice = cart.reduce( (sum, item) => sum + item.price * item.quantity, 0 ) 
+  const totalPrice = cart?.reduce( (sum, item) => sum + item.price * item.quantity, 0 ) || 0
 
   useEffect(() => {
     if (cart?.length > 0) {
@@ -119,7 +119,8 @@ const Cart = ({
             </div>
 
             {/* Price Details - Takes up 1 column */}
-            <div className="bg-white rounded-lg p-6 h-fit">
+           {
+            cart.length > 0 &&  <div className="bg-white rounded-lg p-6 h-fit">
               <h3 className="text-lg font-semibold mb-4">PRICE DETAILS</h3>
               <div className="space-y-3 border-b pb-4 mb-4">
                 <div className="flex justify-between">
@@ -147,6 +148,7 @@ const Cart = ({
                 PLACE ORDER
               </Link>
             </div>
+           }
           </div>
         )}
       </main>
