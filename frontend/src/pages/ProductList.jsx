@@ -5,6 +5,8 @@ import { CiStar } from "react-icons/ci";
 import { FaStar } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
+import { ToastContainer } from "react-toastify";
+import { useAuth } from "../context/AuthContext";
 
 const ProductList = ({
   handleAddToCart,
@@ -20,6 +22,8 @@ const ProductList = ({
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [clearCheckbox, setClearCheckbox] = useState(false);
   const [selectedSort, setSelectedSort] = useState("");
+
+  const { user } = useAuth()
 
   const { category: categoryByParams } = useParams();
 
@@ -41,7 +45,7 @@ const ProductList = ({
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [products?.length , user]);
 
   useEffect(() => {
     async function fetchCategories() {
@@ -53,7 +57,7 @@ const ProductList = ({
       }
     }
     fetchCategories();
-  }, [products]);
+  }, [user]);
 
   const handleChangeCategories = (event) => {
     const { value, checked } = event.target;
@@ -107,6 +111,7 @@ const ProductList = ({
   return (
     <>
       <div className="container mx-auto my-6 px-4">
+      <ToastContainer/>
         <div className="flex flex-col md:flex-row gap-6">
           {/* Filters Section */}
           <div className="w-full md:w-1/4 bg-gray-100 p-4 rounded-lg shadow">
@@ -218,7 +223,7 @@ const ProductList = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProducts?.map((product) => (
-                <ProductCard
+              <ProductCard
                   key={product._id}
                   product={product}
                   handleAddToCart={handleAddToCart}
@@ -227,6 +232,7 @@ const ProductList = ({
                   handleNavigateToCart={handleNavigateToCart}
                   isProductInWishlist={isProductInWishlist}
                 />
+               
               ))}
             </div>
           </div>
