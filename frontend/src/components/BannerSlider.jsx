@@ -27,7 +27,7 @@ const BannerSlider = () => {
           key={index}
           src={banner}
           alt={`Banner ${index + 1}`}
-          className={`absolute inset-0 w-full h-96 rounded-3xl object-cover  transition-opacity duration-1000 ease-in-out ${index === currentIndex ? 'opacity-100' : 'opacity-0'}`}
+          className={`absolute inset-0  w-full h-96 rounded-3xl object-cover  transition-opacity duration-1000 ease-in-out ${index === currentIndex ? 'opacity-100' : 'opacity-0'}`}
         />
       ))}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
