@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useEffect , useContext , useState, createContext } from "react";
+import {toast} from "react-toastify"
 
 const AuthContext = createContext(null);
 
@@ -29,6 +30,7 @@ export const AuthProvider = ({ children }) => {
         },
         body:JSON.stringify({name, email, password})
        });
+
 
        const data = await response.json();
 
@@ -67,6 +69,11 @@ export const AuthProvider = ({ children }) => {
       setUser(data.user);
 
       console.log(data);
+
+      setTimeout(() => {
+
+        window.location.reload()
+      },0)
       return data;
     } catch (error) {
       console.error("failed to login", error);
@@ -77,6 +84,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    toast('user logout successfully ')
     setUser(null)
   }
 
