@@ -11,11 +11,16 @@ import PrivateRoute from "./components/PrivateRoute";
 import Profile from "./pages/Profile";
 import SignForm from "./pages/SignupForm";
 import api from "./api/api";
+import Address from "./pages/Address";
+import { toast } from "react-toastify";
+import { useAuth } from "./context/AuthContext";
 
 function App() {
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [totalCart, setTotalCart] = useState(0);
+
+  const { user } = useAuth;
 
   const handleAddToCart = async (product, e) => {
     // Stop event propagation to prevent link navigation
@@ -25,6 +30,8 @@ function App() {
 
     const { _id } = product;
 
+    toast("product added to cart");
+
     // implement add to cart logic
     setCart((prev) => [...prev, product]);
     // console.log("Added to cart:", product);
@@ -32,7 +39,7 @@ function App() {
     try {
       const response = await api.addTOCart(_id, 1);
       const items = response?.cart?.items;
-      setCart([...items]);
+      setCart(items);
     } catch (error) {
       console.error("failed to add to cart", error);
     }
@@ -42,6 +49,8 @@ function App() {
     const previousCartList = [...cart];
 
     setCart((prev) => prev.filter((item) => item.product._id !== productId));
+
+    toast("Item removed from the cart");
 
     try {
       console.log(productId);
@@ -61,12 +70,18 @@ function App() {
   const fetchCart = useCallback(async () => {
     try {
       const {
-        cart: { items },
-        cart,
-      } = await api.fetchCart();
+        cart
+      } = await api.fetchCart() ;
 
-      setCart(items);
-      setTotalCart(cart.totalAmount);
+
+    
+
+      setCart(cart?.items);
+      setTotalCart(cart?.totalAmount);
+
+      if(cart === undefined) {
+        setCart([])
+      }
     } catch (error) {
       console.error("Error while fetching cart", error);
       setCart([]);
@@ -74,46 +89,42 @@ function App() {
   }, []);
 
   const isProductInCart = (productId) => {
-    return cart.some((item) => item?.product?._id === productId);
+    return cart?.some((item) => item?.product?._id === productId)  ;
   };
 
   const updateQuantity = async (product, action) => {
     const existingProduct = cart.find((item) => item._id === product._id);
-    const previousCartList = [...wishlist];
 
     const updatedCartList = existingProduct
       ? cart.map((item) => {
           return item.product._id === product.product._id
             ? action === "increase"
               ? { ...item, quantity: item.quantity + 1 }
-              : { ...item, quantity: item.quantity - 1 }
+              : { ...item, quantity: Math.max(1, item.quantity - 1) }
             : item;
         })
       : [...cart, { ...product, quantity: 1 }];
 
     try {
-      setCart(updatedCartList);
-
-      // console.log(product.product._id)
-
       await api.updateCartItemQuantity(product.product._id, action);
+
+      setCart(updatedCartList);
     } catch (error) {
       console.error("failed to update item quantity", error);
-      setCart(previousCartList);
     }
   };
 
   useEffect(() => {
     fetchCart();
-  }, [fetchCart]);
+  }, [fetchCart, user]);
 
   const fetchWishlist = useCallback(async () => {
     try {
-      const {
-        wishlist: { items },
-      } = await api.getItemFromWishlist();
-
-      setWishlist(items);
+      const { wishlist } = await api.getItemFromWishlist() ;
+      setWishlist(wishlist?.items);
+      if(wishlist === undefined) {
+        setWishlist([])
+      }
     } catch (error) {
       console.error("Error fetching wishlist:", error);
       setWishlist([]);
@@ -122,10 +133,10 @@ function App() {
 
   useEffect(() => {
     fetchWishlist();
-  }, [fetchWishlist]);
+  }, [fetchWishlist, user]);
 
   const isProductInWishlist = (productId) => {
-    return wishlist.some((item) => {
+    return wishlist?.some((item) => {
       return item?.product?._id === productId;
     });
   };
@@ -136,6 +147,8 @@ function App() {
 
     const { _id } = product;
     const previousWishlist = [...wishlist]; // Backup current state
+
+    toast("Item added to wishlist");
 
     // Check if the product is already in the wishlist
     const existingProduct = wishlist.find((item) => item?.product?._id === _id);
@@ -155,13 +168,12 @@ function App() {
       // API call to update the wishlist on the server
       const response = await api.AddToWishlist(_id, 1);
 
+
+      await fetchWishlist()
       // Validate the API response
       if (!response || response.message !== "Product added to wishlist") {
         throw new Error(response?.message || "Unknown server error");
       }
-
-      // Refresh the wishlist from the server
-      await fetchWishlist();
     } catch (error) {
       console.error("Failed to add item to the wishlist:", error);
 
@@ -171,6 +183,8 @@ function App() {
   };
 
   const handleRemoveProductFromWishlist = async (productId) => {
+    toast("item removed from the wishlist");
+
     // Store the previous wishlist state
     const previousWishlist = [...wishlist];
 
@@ -278,6 +292,10 @@ function App() {
               />
             }
           />
+        </Route>
+
+        <Route path="/address">
+          <Route index element={<Address />} />
         </Route>
       </Routes>
     </Router>
