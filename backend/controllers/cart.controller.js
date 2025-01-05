@@ -3,10 +3,14 @@ const Product = require("../models/product.model");
 const User = require("../models/user.model");
 
 exports.addToCart = async (req, res) => {
-  const { productId, quantity } = req.body;
+  const { productId, quantity = 1} = req.body;
   try {
     let cart = await Cart.findOne({ user: req.user._id });
     const product = await Product.findById(productId);
+
+    if(!productId) {
+      return res.status(400).json({error:"Please Provide the ProductId to add Item in the Cart"})
+    }
 
     if (!product) {
       return res.status(400).json({ error: "Product not found" });
@@ -16,14 +20,7 @@ exports.addToCart = async (req, res) => {
       cart = new Cart({ user: req.user._id, items: [] });
     }
 
-    // add cart to user
-    const user = await User.findByIdAndUpdate(
-      { _id: req.user._id },
-      { $push: { cart: cart._id } },
-      { new: true }
-    );
-
-    await user.save();
+  
 
     const exitingItem = cart.items.find(
       (item) => item.product.toString() === productId
@@ -35,12 +32,25 @@ exports.addToCart = async (req, res) => {
       cart.items.push({
         product: productId,
         quantity,
-        price: product.price,
+        price: product.price || 0,
       });
     }
 
     await cart.save();
     await cart.populate("items.product");
+
+      // add cart to user
+
+      if(!cart._id.equals(req.user.cart)){
+        await User.findByIdAndUpdate(
+          { _id: req.user._id },
+          { $set: { cart: cart._id } },
+          { new: true }
+        );
+      }
+      else{
+        console.log('cart is associated with the authenticated user')
+      }
 
     res
       .status(200)
@@ -65,13 +75,6 @@ exports.removeFromCart = async (req, res) => {
       (item) => item.product.toString() !== productId
     );
 
-    const user = await User.findByIdAndUpdate(
-      req.user._id,
-      { $pull: { cart: cart._id } },
-      { new: true }
-    );
-
-    await user.save();
     await cart.save();
     await cart.populate("items.product");
 
@@ -89,6 +92,7 @@ exports.viewCart = async (req, res) => {
     const cart = await Cart.findOne({ user: req.user._id }).populate(
       "items.product"
     );
+
 
     if (!cart) {
       return res.status(400).json({ error: "Empty cart" });
