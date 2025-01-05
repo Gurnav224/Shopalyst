@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useEffect } from "react";
-import {  Heart, Minus, Plus } from "lucide-react";
+import { Heart, Minus, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
@@ -11,17 +11,16 @@ const Cart = ({
   fetchCart,
   updateQuantity,
   handleAddToWishlist,
-  isProductInWishlist
+  isProductInWishlist,
 }) => {
-
-  const totalPrice = cart?.reduce( (sum, item) => sum + item.price * item.quantity, 0 ) || 0
+  const totalPrice =
+    cart?.reduce((sum, item) => sum + item.price * item.quantity, 0) || 0;
 
   useEffect(() => {
     if (cart?.length > 0) {
       fetchCart();
     }
-  }, [fetchCart , cart?.length]);
-
+  }, [fetchCart, cart?.length]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -29,7 +28,7 @@ const Cart = ({
         <h2 className="text-2xl font-bold mb-6">
           MY CART ({cart?.length || 0})
         </h2>
-        <ToastContainer/>
+        <ToastContainer />
 
         {cart?.length === 0 ? (
           <p className="text-gray-600 text-center">Your cart is empty.</p>
@@ -93,23 +92,21 @@ const Cart = ({
                         <button
                           onClick={(e) => handleAddToWishlist(item.product, e)}
                           className="w-full py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
-                        >{
-                          isProductInWishlist(item?.product?._id) ? (
-
-                          <Link to='/wishlist' className="flex justify-center gap-2">
-                          <Heart className="w-5 h-5  fill-red-500 text-red-500"/>
-                          Go To Wishlist
-
-                          </Link>
-                         
-                          ):(
-                          <div className="flex justify-center gap-2" >
-                          <Heart className="w-5 h-5 text-gray-700 hover:fill-red-500 hover:text-red-500" />
-                          Move to Wishlist
-                          </div>
-                          )
-                        }
-                        
+                        >
+                          {isProductInWishlist(item?.product?._id) ? (
+                            <Link
+                              to="/wishlist"
+                              className="flex justify-center gap-2"
+                            >
+                              <Heart className="w-5 h-5  fill-red-500 text-red-500" />
+                              Go To Wishlist
+                            </Link>
+                          ) : (
+                            <div className="flex justify-center gap-2">
+                              <Heart className="w-5 h-5 text-gray-700 hover:fill-red-500 hover:text-red-500" />
+                              Move to Wishlist
+                            </div>
+                          )}
                         </button>
                       </div>
                     </div>
@@ -119,36 +116,46 @@ const Cart = ({
             </div>
 
             {/* Price Details - Takes up 1 column */}
-           {
-            cart.length > 0 &&  <div className="bg-white rounded-lg p-6 h-fit">
-              <h3 className="text-lg font-semibold mb-4">PRICE DETAILS</h3>
-              <div className="space-y-3 border-b pb-4 mb-4">
-                <div className="flex justify-between">
-                  <span>Price ({cart?.length || 0} item)</span>
-                  <span>${totalPrice.toLocaleString() || totalCart.toLocaleString()}</span>
+            {cart.length > 0 && (
+              <div className="bg-white rounded-lg p-6 h-fit">
+                <h3 className="text-lg font-semibold mb-4">PRICE DETAILS</h3>
+                <div className="space-y-3 border-b pb-4 mb-4">
+                  <div className="flex justify-between">
+                    <span>Price ({cart?.length || 0} item)</span>
+                    <span>
+                      $
+                      {totalPrice.toLocaleString() ||
+                        totalCart.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-green-600">
+                    <span>Discount</span>
+                    <span>- $10</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Delivery Charges</span>
+                    <span>$49</span>
+                  </div>
                 </div>
-                <div className="flex justify-between text-green-600">
-                  <span>Discount</span>
-                  <span>- $10</span>
+                <div className="flex justify-between font-semibold text-lg mb-6">
+                  <span>TOTAL AMOUNT</span>
+                  <span>
+                    $
+                    {(totalPrice - 10 + 49).toLocaleString() ||
+                      (totalCart - 10 + 49).toLocaleString()}
+                  </span>
                 </div>
-                <div className="flex justify-between">
-                  <span>Delivery Charges</span>
-                  <span>$49</span>
-                </div>
+                <p className="text-green-600 mb-4">
+                  You will save $1000 on this order
+                </p>
+                <Link
+                  to="/address"
+                  className="w-full block text-center  py-3 bg-blue-500 text-white  rounded-lg hover:bg-blue-600 transition-colors"
+                >
+                  Checkout
+                </Link>
               </div>
-              <div className="flex justify-between font-semibold text-lg mb-6">
-                <span>TOTAL AMOUNT</span>
-                <span>${ (totalPrice - 10 + 49).toLocaleString
-                () ||(totalCart -10 + 49).toLocaleString()}</span>
-              </div>
-              <p className="text-green-600 mb-4">
-                You will save $1000 on this order
-              </p>
-              <Link to='/address' className="w-full block text-center  py-3 bg-blue-500 text-white  rounded-lg hover:bg-blue-600 transition-colors">
-                PLACE ORDER
-              </Link>
-            </div>
-           }
+            )}
           </div>
         )}
       </main>
