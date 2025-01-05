@@ -136,6 +136,17 @@ const api = {
       body:JSON.stringify({productId, action})
     });
     return response.json()
+  },
+
+  getUser: async () => {
+      const response = await fetch(`${baseUrl}/users`,{
+        method:'GET',
+        headers:{
+          'Content-Type':'application/json',
+          Authorization:"Bearer "+token
+        }
+      })
+      return response.json()
   }
 };
 
