@@ -1,5 +1,8 @@
-const apiUrl = "http://localhost:3000/api";
+// const apiUrl = "http://localhost:3000/api";
 const token = localStorage.getItem("token");
+
+const apiUrl = import.meta.env.VITE_API_URL_VERCEL;
+
 
 export const apiRequest = async (endpoint, method = "GET", body = null) => {
   try {

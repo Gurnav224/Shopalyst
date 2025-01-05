@@ -2,6 +2,8 @@
 import { useEffect , useContext , useState, createContext } from "react";
 import {toast} from "react-toastify"
 
+const apiUrl = import.meta.env.VITE_API_URL_VERCEL;
+
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
@@ -23,7 +25,7 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (name, email, password) => {
    try {
-       const response = await fetch('http://localhost:3000/api/signup',{
+       const response = await fetch(`${apiUrl}/signup`,{
         method:"POST",
         headers:{
           'Content-Type':'application/json'
@@ -50,8 +52,8 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-     
-      const response = await fetch(`http://localhost:3000/api/login`,{
+      console.log(apiUrl)
+      const response = await fetch(`${apiUrl}/login`,{
         method:"POST",
         headers:{
           'Content-Type':'application/json'
