@@ -8,6 +8,7 @@
         "https://images.unsplash.com/photo-1622445275576-721325763afe?w=800"
       ],
       "price": 24.99,
+      "discount":0.01,
       "rating": 4.5,
       "category": "Tops",
       "brand": "EcoWear"

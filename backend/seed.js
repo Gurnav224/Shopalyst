@@ -2,7 +2,7 @@
 const fs = require('fs');
 const connetDB = require('./database/conn');
 const {config} = require('dotenv');
-const {Product} = require('./models/product.model');
+const Product = require('./models/product.model');
 const { default: mongoose } = require('mongoose');
 const Category = require('./models/category.model');
 
