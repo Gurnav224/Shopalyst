@@ -18,7 +18,7 @@ const LoginForm = () => {
     try {
       await login(email, password);
 
-      navigate('/products')
+      navigate('/')
 
     } catch (error) {
       setError(error.message);
