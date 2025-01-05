@@ -34,7 +34,7 @@ exports.register = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("failed to register user");
+    console.error("failed to register user",error);
     res.status(500).json({ error: "failed to register new user" });
   }
 };
@@ -68,6 +68,7 @@ exports.login = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error('failed to login',error)
     res.status(500).json({ error: "login failed" });
   }
 };
