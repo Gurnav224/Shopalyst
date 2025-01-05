@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer , toast} from "react-toastify";
 
 const LoginForm = () => {
-  const [email, setEmail] = useState("user1@gmail.com");
-  const [password, setPassword] = useState("user123");
+  const [email, setEmail] = useState("demo1@gmail.com");
+  const [password, setPassword] = useState("demo@123");
   const [error, setError] = useState("");
   const navigate = useNavigate()
 
@@ -34,7 +34,7 @@ const LoginForm = () => {
             Sign in to your account
           </h2>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit} method="POST">
           <div className="rounded-md shadow-sm space-y-4">
             <div>
               <label htmlFor="email" className="sr-only">

@@ -19,7 +19,7 @@ exports.register = async (req, res) => {
       email,
       password,
     });
-
+    
     await user.save();
 
     const token = generateToken(user._id);
@@ -69,5 +69,20 @@ exports.login = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: "login failed" });
+  }
+};
+
+exports.user = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.user._id }).populate("cart").populate("wishlist").populate('order');
+
+    if (!user) {
+      return res.status(400).json({ error: "No user found" });
+    }
+
+    res.status(200).json({ message: "all users get successfully", user });
+  } catch (error) {
+    console.error("failed to fetch all users from db", error);
+    res.status(500).json({ error: "server error" });
   }
 };

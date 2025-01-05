@@ -1,20 +1,20 @@
 const express = require("express");
 const connetDB = require("./database/conn");
-const session = require('express-session');
-const MongoStore = require('connect-mongo');
-
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
 
 const { config } = require("dotenv");
 
 const cors = require("cors");
 const morgan = require("morgan");
 
-const userRouter = require('./routes/user.route');
+const userRouter = require("./routes/user.route");
 const productRouter = require("./routes/product.route");
 const categoryRouter = require("./routes/category.route");
 const cartRouter = require("./routes/cart.route");
 const wishlistRouter = require("./routes/wishlist.route");
-const addressRouter = require('./routes/address.route');
+const addressRouter = require("./routes/address.route");
+const orderRouter = require('./routes/order.route');
 
 config({ path: ".env" });
 
@@ -25,20 +25,21 @@ app.use(
     origin: "*",
     credentials: true,
     optionsSuccessStatus: 200,
-  })
+  }),
 );
 
-app.use(session({
-  secret:'my_key',
-  resave:false,
-  saveUninitialized:false,
-  store:MongoStore.create({
-    mongoUrl:process.env.MONGODB,
-    ttl:60*60*24
+app.use(
+  session({
+    secret: "my_key",
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB,
+      ttl: 60 * 60 * 24,
+    }),
+    cookie: { secure: false },
   }),
-  cookie:{secure:false}
-}))
-
+);
 
 app.use(express.json());
 app.use(morgan("dev"));
@@ -49,8 +50,7 @@ app.get("/", (req, res) => {
 
 // user routes
 
-app.use('/api', userRouter );
-
+app.use("/api", userRouter);
 
 // products routes
 app.use("/api", productRouter);
@@ -62,10 +62,13 @@ app.use("/api", categoryRouter);
 app.use("/api", cartRouter);
 
 // wishlist routes;
-app.use("/api" , wishlistRouter);
+app.use("/api", wishlistRouter);
 
 // address routes
-app.use('/api', addressRouter)
+app.use("/api", addressRouter);
+
+// order routes
+app.use('/api',orderRouter)
 
 const PORT = process.env.PORT || 5000;
 

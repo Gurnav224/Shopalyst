@@ -22,9 +22,9 @@ const cartSchema = new Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
-      ref: "user",
+      ref: "User",
       required: true,
-      unique: true,
+      // unique: true,
     },
     items: [cartItemSchema],
     totalAmount: {

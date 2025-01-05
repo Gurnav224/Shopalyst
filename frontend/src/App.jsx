@@ -10,10 +10,12 @@ import LoginForm from "./pages/LoginForm";
 import PrivateRoute from "./components/PrivateRoute";
 import Profile from "./pages/Profile";
 import SignForm from "./pages/SignupForm";
-import api from "./api/api";
 import Address from "./pages/Address";
 import { toast } from "react-toastify";
 import { useAuth } from "./context/AuthContext";
+import { wishlistAPI } from "./api/wishlist";
+import { cartAPI } from "./api/cart";
+import Checkout from "./pages/Checkout";
 
 function App() {
   const [cart, setCart] = useState([]);
@@ -37,7 +39,7 @@ function App() {
     // console.log("Added to cart:", product);
 
     try {
-      const response = await api.addTOCart(_id, 1);
+      const response = await cartAPI.addToCart(_id, 1);
       const items = response?.cart?.items;
       setCart(items);
     } catch (error) {
@@ -54,7 +56,7 @@ function App() {
 
     try {
       console.log(productId);
-      const response = await api.removeItemFromCart(productId);
+      const response = await cartAPI.removeItemFromCart(productId);
       console.log(response);
       if (response.message !== "item from remove from cart successfully") {
         console.error("faile to remove item from the cart");
@@ -69,18 +71,13 @@ function App() {
 
   const fetchCart = useCallback(async () => {
     try {
-      const {
-        cart
-      } = await api.fetchCart() ;
-
-
-    
+      const { cart } = await cartAPI.fetchCart();
 
       setCart(cart?.items);
       setTotalCart(cart?.totalAmount);
 
-      if(cart === undefined) {
-        setCart([])
+      if (cart === undefined) {
+        setCart([]);
       }
     } catch (error) {
       console.error("Error while fetching cart", error);
@@ -89,7 +86,7 @@ function App() {
   }, []);
 
   const isProductInCart = (productId) => {
-    return cart?.some((item) => item?.product?._id === productId)  ;
+    return cart?.some((item) => item?.product?._id === productId);
   };
 
   const updateQuantity = async (product, action) => {
@@ -106,7 +103,7 @@ function App() {
       : [...cart, { ...product, quantity: 1 }];
 
     try {
-      await api.updateCartItemQuantity(product.product._id, action);
+      await cartAPI.updateCartItemQuanity(product.product._id, action);
 
       setCart(updatedCartList);
     } catch (error) {
@@ -116,14 +113,14 @@ function App() {
 
   useEffect(() => {
     fetchCart();
-  }, [fetchCart, user]);
+  }, [fetchCart, user, user]);
 
   const fetchWishlist = useCallback(async () => {
     try {
-      const { wishlist } = await api.getItemFromWishlist() ;
+      const { wishlist } = await wishlistAPI.getItemFromWishlist();
       setWishlist(wishlist?.items);
-      if(wishlist === undefined) {
-        setWishlist([])
+      if (wishlist === undefined) {
+        setWishlist([]);
       }
     } catch (error) {
       console.error("Error fetching wishlist:", error);
@@ -166,10 +163,9 @@ function App() {
 
     try {
       // API call to update the wishlist on the server
-      const response = await api.AddToWishlist(_id, 1);
+      const response = await wishlistAPI.addToWishlist(_id, 1);
 
-
-      await fetchWishlist()
+      await fetchWishlist();
       // Validate the API response
       if (!response || response.message !== "Product added to wishlist") {
         throw new Error(response?.message || "Unknown server error");
@@ -195,7 +191,7 @@ function App() {
 
     try {
       // Make the API call
-      const response = await api.removeFromWishlist(productId);
+      const response = await wishlistAPI.removeFromWishlist(productId);
 
       // If the API call fails, revert the state
       if (response.message !== "product remove the wishlist") {
@@ -296,6 +292,9 @@ function App() {
 
         <Route path="/address">
           <Route index element={<Address />} />
+        </Route>
+        <Route path="/checkout">
+          <Route index element={<Checkout />} />
         </Route>
       </Routes>
     </Router>

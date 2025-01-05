@@ -27,6 +27,7 @@ email: {
   ],
   wishlist: [{ type: Schema.Types.ObjectId, ref: "Wishlist" }],
   addresses: [{ type: Schema.Types.ObjectId, ref: "Address" }],
+  order:[{type:Schema.Types.ObjectId,ref:'Order'}],
   createdAt: {
     type: Date,
     default: Date.now,

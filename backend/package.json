@@ -2,11 +2,12 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "NODE_ENV=Production node index",
-    "dev": "NODE_ENV=Development nodemon index",
-    "prodev":"NODE_ENV=Production nodemon index"
+    "start": "NODE_ENV=Production node app",
+    "dev": "NODE_ENV=Development nodemon app",
+    "prodev":"NODE_ENV=Production nodemon app"
   },
   "keywords": [],
   "author": "",

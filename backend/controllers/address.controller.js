@@ -3,9 +3,12 @@ const User = require("../models/user.model");
 
 exports.createAddress = async (req, res) => {
   const {
+    firstName,
+    lastName,
     addressLine1,
     addressLine2,
     street,
+    contactNumber,
     city,
     state,
     zipCode,
@@ -14,10 +17,14 @@ exports.createAddress = async (req, res) => {
     type,
     isDefault,
   } = req.body;
+  
 
   try {
     const address = new Address({
       user: req.user._id,
+      firstName,
+      lastName,
+      contactNumber,
       addressLine1,
       addressLine2,
       street,
@@ -31,14 +38,18 @@ exports.createAddress = async (req, res) => {
     });
     await address.save();
 
-    const user = await User.findByIdAndUpdate(
-      req.user._id,
-      { $push: { addresses: address._id } },
-      { new: true }
-    );
+  ;
 
-    await user.save();
-
+    if (!address._id.equals(req.user.address)) {
+      await User.findByIdAndUpdate(
+        req.user._id,
+        { $set: { addresses: address._id } },
+        { new: true }
+      );
+    }
+    else{
+      console.log('address user match with authenticated user')
+    }
     res.status(201).json({ message: "new address added succesfully", address });
   } catch (error) {
     console.error("failed to create new address", error);
@@ -48,7 +59,7 @@ exports.createAddress = async (req, res) => {
 
 exports.getAddress = async (req, res) => {
   try {
-    const address = await Address.find({ user: req.user._id });
+    const address = await Address.find({ user: req.user._id })
 
     if (address.length === 0) {
       return res.status(400).json({ error: "Address not found" });
@@ -64,6 +75,8 @@ exports.getAddress = async (req, res) => {
 exports.updateAddress = async (req, res) => {
   const { addressId } = req.params;
   try {
+
+
     const address = await Address.findOneAndUpdate(
       { user: req.user._id, _id: addressId },
       req.body,

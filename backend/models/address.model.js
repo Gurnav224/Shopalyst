@@ -8,6 +8,17 @@ const AddressSchema = new Schema(
       ref: "User",
       required:true
     },
+    firstName:{
+      type:String,
+      required:true
+    },
+    lastName:{
+      type:String
+    },
+    contactNumber:{
+      type:String,
+      required:true
+    },
     addressLine1: {
       type: String,
       required: true,
