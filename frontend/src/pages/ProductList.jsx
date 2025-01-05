@@ -1,12 +1,13 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import api from "../api/api";
 import { CiStar } from "react-icons/ci";
 import { FaStar } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import { ToastContainer } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
+import { categoryAPI } from '../api/category';
+import {productAPI } from '../api/products'
 
 const ProductList = ({
   handleAddToCart,
@@ -35,7 +36,7 @@ const ProductList = ({
 
   async function fetchProducts() {
     try {
-      const products = await api.getAllProducts();
+      const products = await productAPI.getAllProducts();
       setDefaultProducts(products?.products); // save original data
       setProducts(products?.products); // set displayed data
     } catch (error) {
@@ -50,7 +51,7 @@ const ProductList = ({
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const categories = await api.getFeaturedCategory();
+        const categories = await categoryAPI.getFeaturedCategory();
         setCategories(categories?.data?.categories);
       } catch (error) {
         console.error("Failed to fetch categories", error);
