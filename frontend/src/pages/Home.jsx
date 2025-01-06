@@ -1,8 +1,7 @@
-/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import api from "../api/api";
 import CategoriesSlider from "../components/CategoriesSlider";
 import BannerSlider from "../components/BannerSlider";
+import {categoryAPI } from '../api/category'
 
 const Home = () => {
   const [categories, setCategories] = useState([]);
@@ -10,7 +9,7 @@ const Home = () => {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const categories = await api.getFeaturedCategory();
+        const categories = await categoryAPI?.getFeaturedCategory();
         setCategories(categories?.data?.categories);
       } catch (error) {
         console.error("Error fetching categories:", error);

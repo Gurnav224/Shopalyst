@@ -21,6 +21,7 @@ export const apiRequest = async (endpoint, method = "GET", body = null) => {
       throw new Error(`API, Error, ${response.statusText}`);
     }
 
+
     return response.json();
   } catch (error) {
     console.error("API Request Error: ", error);
