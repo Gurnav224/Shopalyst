@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useParams  , useNavigate} from "react-router-dom";
-import { useEffect, useState } from "react";
-import api from "../api/api.js";
+import { useCallback, useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import { Navigation, Pagination } from "swiper/modules";
@@ -9,6 +8,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import ProductCard from "../components/ProductCard.jsx";
 import { Star, ShoppingCart } from "lucide-react";
+import  { productAPI } from "../api/products.js"
 
 
 const ProductDetails = ({ handleAddToCart, handleAddToWishlist, isProductInCart , isProductInWishlist}) => {
@@ -19,7 +19,7 @@ const ProductDetails = ({ handleAddToCart, handleAddToWishlist, isProductInCart 
 
   const updateProduct = async (id, updatedQuantity) => {
     try {
-      const data = await api.updateProductQuantity(id, updatedQuantity);
+      const data = await productAPI?.updateProductQuantity(id, updatedQuantity);
       if (data) {
         console.log("data successfully updated", data);
         setProduct((prevProduct) => ({
@@ -34,7 +34,7 @@ const ProductDetails = ({ handleAddToCart, handleAddToWishlist, isProductInCart 
 
   useEffect(() => {
     const fetchProductById = async () => {
-      const product = await api?.getProductById(productId);
+      const product = await productAPI?.getProductById(productId);
       setProduct(product?.product);
     };
     fetchProductById();
@@ -50,17 +50,27 @@ const ProductDetails = ({ handleAddToCart, handleAddToWishlist, isProductInCart 
     updateProduct(id, newQuantity);
   };
 
-  useEffect(() => {
-    const fetchCategoriesProduct = async () => {
-      try {
-        const data = await api?.relatedCategoryProducts(product?.category);
-        setRelatedProducts(data?.products);
-      } catch (error) {
-        console.error("failed to get related category product", error);
-      }
-    };
-    fetchCategoriesProduct();
+
+  const fetchCategoriesProduct = useCallback(async () => {
+    if (!product?.category || !productAPI?.relatedCategoryProducts) {
+      console.error("Invalid product category or API method");
+      return;
+    }
+  
+    try {
+      const data = await productAPI.relatedCategoryProducts(product.category);
+      setRelatedProducts(data?.products || []);
+    } catch (error) {
+      console.error("Failed to get related category product", error);
+      console.error("Error details:", error.response || error.message || error);
+    }
   }, [product?.category]);
+  
+  useEffect(() => {
+    if (product?.category) {
+      fetchCategoriesProduct();
+    }
+  }, [fetchCategoriesProduct, product?.category]);
 
 
   const handleNavigateToCart = (e) => {
