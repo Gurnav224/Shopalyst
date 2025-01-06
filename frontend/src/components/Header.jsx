@@ -23,7 +23,7 @@ const Header = ({cart , wishlist}) => {
       <div className="flex space-x-6">
         <Link to="/" className="text-gray-800 hover:text-blue-600 transition">Home</Link>
         <Link to="/products" className="text-gray-800 hover:text-blue-600 transition">Products</Link>
-        <Link href="/products/Tops" className="text-gray-800 hover:text-blue-600 transition">Categories</Link>
+      
       </div>
 
       {/* Search Bar */}
