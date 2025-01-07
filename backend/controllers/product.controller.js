@@ -68,3 +68,24 @@ exports.getProductsByCategory = async (req, res) => {
   }
 };
 
+exports.searchProducts = async (req , res) => {
+  const { query } = req.query;
+  console.log(query)
+  try{
+    if(!query) {
+      const products = await Product.find()
+      return res.json(products)
+    }
+    
+    const searchPattern = new RegExp(query, 'i');
+    
+    const products = await Product.find({ name: searchPattern });
+    
+    res.json(products)
+    
+  }
+  catch(error){
+    console.error('failed to fetch product by query', query);
+    res.status(500).json({ error: error.message})
+  }
+}
