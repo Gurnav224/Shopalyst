@@ -17,10 +17,15 @@ import { wishlistAPI } from "./api/wishlist";
 import { cartAPI } from "./api/cart";
 import Checkout from "./pages/Checkout";
 
+
 function App() {
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [totalCart, setTotalCart] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+
+
+
 
   const { user } = useAuth;
 
@@ -207,7 +212,7 @@ function App() {
 
   return (
     <Router>
-      <Header cart={cart} wishlist={wishlist} />
+      <Header cart={cart} wishlist={wishlist} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <Routes>
         <Route path="/signup" element={<SignForm />} />
         <Route path="/login" element={<LoginForm />} />
@@ -227,6 +232,8 @@ function App() {
                 isProductInCart={isProductInCart}
                 handleAddToWishlist={handleAddToWishlist}
                 isProductInWishlist={isProductInWishlist}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
               />
             }
           />
