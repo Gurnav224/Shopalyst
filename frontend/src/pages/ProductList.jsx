@@ -8,6 +8,9 @@ import { ToastContainer } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
 import { categoryAPI } from '../api/category';
 import {productAPI } from '../api/products'
+import  { debounce } from "lodash"
+
+
 
 const ProductList = ({
   handleAddToCart,
@@ -15,6 +18,8 @@ const ProductList = ({
   isProductInCart,
   isProductInWishlist,
   handleNavigateToCart,
+  searchQuery,
+  setSearchQuery
 }) => {
   const [defaultProducts, setDefaultProducts] = useState([]); // original product list
   const [products, setProducts] = useState([]); // displayed products
@@ -23,6 +28,12 @@ const ProductList = ({
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [clearCheckbox, setClearCheckbox] = useState(false);
   const [selectedSort, setSelectedSort] = useState("");
+  const [loading , setLoading] = useState(false);
+  const [error , setError] = useState('');
+
+
+
+
 
   const { user } = useAuth()
 
@@ -46,7 +57,7 @@ const ProductList = ({
 
   useEffect(() => {
     fetchProducts();
-  }, [products?.length , user]);
+  }, [user ]);
 
   useEffect(() => {
     async function fetchCategories() {
@@ -106,8 +117,44 @@ const ProductList = ({
     setSelectedCategory([]);
     setClearCheckbox(true);
     setSelectedSort("");
+    setSearchQuery("")
     setProducts(defaultProducts);
   };
+
+
+
+  const debounchedSearch = debounce(async (query) => {
+    if(!query.trim()){
+      setProducts([])
+    }
+
+    try {
+      setLoading(true)
+      const response = await productAPI.searchProducts(query)
+
+
+
+      setProducts(response)
+
+      
+    } catch (error) {
+      setError('Failed to search products. Please try again.');
+      console.error('Search error:', error);
+    }
+    finally{
+      setLoading(false)
+    }
+  })
+  
+  useEffect(()=>{
+    debounchedSearch(searchQuery)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[searchQuery]);
+
+
+
+
+
 
   return (
     <>
@@ -214,6 +261,9 @@ const ProductList = ({
           </div>
 
           {/* Products Section */}
+
+  
+
           <div className="w-full md:w-3/4">
             <div className="flex items-center justify-between mb-6">
               <h5 className="text-2xl font-semibold">Showing All Products</h5>
@@ -222,7 +272,23 @@ const ProductList = ({
               </span>
             </div>
 
+              {/* Error Message */}
+      {error  && (
+        <div className="text-red-500 text-center py-4">
+          {error}
+        </div>
+      )}
+
+            {/* Loading State */}
+            {loading && (
+        <div className=" py-4  text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-t-2 border-blue-500 mx-auto"></div>
+        </div>
+      )}
+
+    
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        
               {filteredProducts?.map((product) => (
               <ProductCard
                   key={product._id}
