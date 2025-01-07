@@ -5,5 +5,6 @@ export const productAPI = {
     getAllProducts:() => apiRequest("products"),
     getProductById:(productId) => apiRequest(`products/${productId}`),
     updateProductQuantity:(productId, updatedQuantity) => apiRequest(`products/updateQuantity/${productId}`, "PUT", {quantity:updatedQuantity}),
-    relatedCategoryProducts:(category) => apiRequest(`products/category/${category}`)
+    relatedCategoryProducts:(category) => apiRequest(`products/category/${category}`),
+    searchProducts:(query) => apiRequest(`products/search?query=${query}`)
 }
