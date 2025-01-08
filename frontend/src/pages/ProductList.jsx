@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { CiStar } from "react-icons/ci";
 import { FaStar } from "react-icons/fa";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import { ToastContainer } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
@@ -30,6 +30,7 @@ const ProductList = ({
   const [selectedSort, setSelectedSort] = useState("");
   const [loading , setLoading] = useState(false);
   const [error , setError] = useState('');
+  const navigate = useNavigate()
 
 
 
@@ -113,6 +114,7 @@ const ProductList = ({
   };
 
   const clearFilter = () => {
+    navigate('/products')
     setRatings(0);
     setSelectedCategory([]);
     setClearCheckbox(true);
