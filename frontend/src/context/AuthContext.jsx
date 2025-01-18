@@ -13,10 +13,12 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     // Check if user is logged in
     const token = localStorage.getItem("token");
-    const userData = localStorage.getItem("user");
+    const userData = JSON.parse(localStorage.getItem("user"));
+
+    
 
     if (token && userData) {
-      setUser(JSON.parse(userData));
+      setUser(userData);
     }
 
       setLoading(false);
