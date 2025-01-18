@@ -20,7 +20,7 @@ const Header = ({ cart, wishlist , searchQuery , setSearchQuery }) => {
       <nav className="bg-slate-50 shadow-md py-4 px-4 md:px-6">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to={'/'} className="flex items-center text-2xl font-bold">Shopsy</Link>
+          <Link to={'/'} className="flex items-center text-2xl font-bold">Shopalyst</Link>
 
           {/* Mobile Menu Button */}
           <button
