@@ -1,21 +1,20 @@
 /* eslint-disable react/prop-types */
-import { useParams  , useNavigate} from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/swiper-bundle.css";
-import { Navigation, Pagination } from "swiper/modules";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
 import ProductCard from "../components/ProductCard.jsx";
 import { Star, ShoppingCart } from "lucide-react";
-import  { productAPI } from "../api/products.js"
+import { productAPI } from "../api/products.js";
 
-
-const ProductDetails = ({ handleAddToCart, handleAddToWishlist, isProductInCart , isProductInWishlist}) => {
+const ProductDetails = ({
+  handleAddToCart,
+  handleAddToWishlist,
+  isProductInCart,
+  isProductInWishlist,
+}) => {
   const { productId } = useParams();
   const [product, setProduct] = useState({});
   const [relatedProducts, setRelatedProducts] = useState([]);
-  const navigate  = useNavigate()
+  const navigate = useNavigate();
 
   const updateProduct = async (id, updatedQuantity) => {
     try {
@@ -32,13 +31,14 @@ const ProductDetails = ({ handleAddToCart, handleAddToWishlist, isProductInCart 
     }
   };
 
-  useEffect(() => {
-    const fetchProductById = async () => {
-      const product = await productAPI?.getProductById(productId);
-      setProduct(product?.product);
-    };
-    fetchProductById();
+  const fetchProductById = useCallback(async () => {
+    const product = await productAPI?.getProductById(productId);
+    setProduct(product?.product);
   }, [productId]);
+
+  useEffect(() => {
+    fetchProductById();
+  }, [fetchProductById]);
 
   const handleIncrement = (id) => {
     const newQuantity = product.quantity + 1;
@@ -50,13 +50,12 @@ const ProductDetails = ({ handleAddToCart, handleAddToWishlist, isProductInCart 
     updateProduct(id, newQuantity);
   };
 
-
   const fetchCategoriesProduct = useCallback(async () => {
     if (!product?.category || !productAPI?.relatedCategoryProducts) {
       console.error("Invalid product category or API method");
       return;
     }
-  
+
     try {
       const data = await productAPI.relatedCategoryProducts(product.category);
       setRelatedProducts(data?.products || []);
@@ -65,71 +64,53 @@ const ProductDetails = ({ handleAddToCart, handleAddToWishlist, isProductInCart 
       console.error("Error details:", error.response || error.message || error);
     }
   }, [product?.category]);
-  
+
   useEffect(() => {
     if (product?.category) {
       fetchCategoriesProduct();
     }
   }, [fetchCategoriesProduct, product?.category]);
 
-
   const handleNavigateToCart = (e) => {
     e.stopPropagation();
-    e.preventDefault()
-    navigate('/cart')
-  } 
- 
+    e.preventDefault();
+    navigate("/cart");
+  };
 
-  const handleBuyNow = (product,e) => {
-    handleAddToCart(product , e)
+  const handleBuyNow = (product, e) => {
+    handleAddToCart(product, e);
     setTimeout(() => {
-    navigate('/cart')
-      
+      navigate("/cart");
     }, 2000);
-  }
-
-
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid md:grid-cols-2 gap-8 bg-white shadow-lg rounded-xl overflow-hidden">
         {/* Product Images Slider */}
-        <div className="p-4">
-          <Swiper
-            modules={[Navigation, Pagination]}
-            navigation
-            pagination={{ clickable: true }}
-            spaceBetween={10}
-            slidesPerView={1}
-            className="w-full h-[450px] rounded-lg"
-          >
-            {product?.images?.map((link, index) => (
-              <SwiperSlide
-                key={index}
-                className="flex items-center justify-center"
-              >
-                <img
-                  src={link}
-                  alt={product.name}
-                  className="max-w-full max-h-full object-contain rounded-lg"
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
+        <div className="p-4 relative">
+          <div className="flex items-center justify-center ">
+            <img
+              src={product.thumbnail}
+              alt={product.name}
+              className="max-w-full h-96 object-contain rounded-lg"
+            />
+          </div>
 
           {/* Action Buttons */}
           <div className="flex space-x-4 mt-6">
-
-            <button  onClick={(e) =>handleBuyNow(product,e)} className="flex-1 flex items-center justify-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105">
-             Buy Now
+            <button
+              onClick={(e) => handleBuyNow(product, e)}
+              className="flex-1 flex items-center justify-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105"
+            >
+              Buy Now
             </button>
 
-
             {isProductInCart(product._id) ? (
-            <button
-              onClick={handleNavigateToCart}
-              to="/cart"
-              className="
+              <button
+                onClick={handleNavigateToCart}
+                to="/cart"
+                className="
                flex-1 flex items-center justify-center 
                         px-6 
                         py-3 
@@ -147,13 +128,13 @@ const ProductDetails = ({ handleAddToCart, handleAddToWishlist, isProductInCart 
                         transform 
                         focus:outline-none 
                       "
-            >
-           <ShoppingCart className="mr-2" />    Go To Cart
-            </button>
-          ) : (
-            <button
-              onClick={(e) => handleAddToCart(product, e)}
-              className="
+              >
+                <ShoppingCart className="mr-2" /> Go To Cart
+              </button>
+            ) : (
+              <button
+                onClick={(e) => handleAddToCart(product, e)}
+                className="
             flex-1 flex items-center justify-center px-4 
               py-2 
               border-2 
@@ -173,10 +154,10 @@ const ProductDetails = ({ handleAddToCart, handleAddToWishlist, isProductInCart 
               focus:ring-blue-500 
               focus:ring-opacity-50
             "
-            >
-              <ShoppingCart className="mr-2" /> Add to Cart
-            </button>
-          )}
+              >
+                <ShoppingCart className="mr-2" /> Add to Cart
+              </button>
+            )}
           </div>
         </div>
 
@@ -252,14 +233,13 @@ const ProductDetails = ({ handleAddToCart, handleAddToWishlist, isProductInCart 
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {relatedProducts?.map((product) => (
-            <ProductCard 
-            key={product._id} 
-            product={product}
-            handleAddToCart={handleAddToCart}
-            handleAddToWishlist={handleAddToWishlist}   
-            isProductInCart={isProductInCart}
-
-            isProductInWishlist={isProductInWishlist}
+            <ProductCard
+              key={product._id}
+              product={product}
+              handleAddToCart={handleAddToCart}
+              handleAddToWishlist={handleAddToWishlist}
+              isProductInCart={isProductInCart}
+              isProductInWishlist={isProductInWishlist}
             />
           ))}
         </div>
