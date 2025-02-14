@@ -17,15 +17,13 @@ import { wishlistAPI } from "./api/wishlist";
 import { cartAPI } from "./api/cart";
 import Checkout from "./pages/Checkout";
 
+import { ToastContainer } from "react-toastify";
 
 function App() {
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [totalCart, setTotalCart] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-
-
-
 
   const { user } = useAuth;
 
@@ -117,8 +115,10 @@ function App() {
   };
 
   useEffect(() => {
-    fetchCart();
-  }, [fetchCart, user, user]);
+    if (user) {
+      fetchCart();
+    }
+  }, [fetchCart, user]);
 
   const fetchWishlist = useCallback(async () => {
     try {
@@ -134,7 +134,9 @@ function App() {
   }, []);
 
   useEffect(() => {
-    fetchWishlist();
+    if (user) {
+      fetchWishlist();
+    }
   }, [fetchWishlist, user]);
 
   const isProductInWishlist = (productId) => {
@@ -212,10 +214,21 @@ function App() {
 
   return (
     <Router>
-      <Header cart={cart} wishlist={wishlist} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+  <ToastContainer/>
+
+      <Header
+        cart={cart}
+        wishlist={wishlist}
+        searchQuery={searchQuery}
+        fetchCart={fetchCart}
+        fetchWishlist={fetchWishlist}
+        setSearchQuery={setSearchQuery}
+      />
       <Routes>
         <Route path="/signup" element={<SignForm />} />
+
         <Route path="/login" element={<LoginForm />} />
+
         <Route path="/" element={<Home />} />
 
         {/* Protected Routes */}
@@ -234,6 +247,10 @@ function App() {
                 isProductInWishlist={isProductInWishlist}
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
+                fetchCart={fetchCart}
+                cart={cart}
+                fetchWishlist={fetchWishlist}
+                wishlist={wishlist}
               />
             }
           />
@@ -246,7 +263,12 @@ function App() {
                 handleAddToWishlist={handleAddToWishlist}
                 isProductInCart={isProductInCart}
                 isProductInWishlist={isProductInWishlist}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
                 cart={cart}
+                wishlist={wishlist}
+                fetchCart={fetchCart}
+                fetchWishlist={fetchWishlist}
               />
             }
           />
@@ -259,6 +281,8 @@ function App() {
                 handleAddToWishlist={handleAddToWishlist}
                 isProductInCart={isProductInCart}
                 isProductInWishlist={isProductInWishlist}
+                fetchCart={fetchCart}
+                fetchWishlist={fetchWishlist}
               />
             }
           />
