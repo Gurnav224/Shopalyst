@@ -1,11 +1,18 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, User, Heart, ShoppingCart, Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
 
-const Header = ({ cart, wishlist , searchQuery , setSearchQuery }) => {
- 
+const Header = ({
+  cart,
+  wishlist,
+  fetchCart,
+  fetchWishlist,
+  searchQuery,
+  setSearchQuery,
+}) => {
   const { user, logout } = useAuth();
   const [userDetails, setUserDetails] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,12 +22,35 @@ const Header = ({ cart, wishlist , searchQuery , setSearchQuery }) => {
     setUserDetails(false); // Close user details when opening menu
   };
 
+  useEffect(() => {
+    if (cart?.length > 0) {
+      fetchCart();
+    }
+  }, [fetchCart, cart?.length]);
+
+  useEffect(() => {
+    if (wishlist?.length > 0) {
+      fetchWishlist();
+    }
+  }, [fetchWishlist, wishlist?.length]);
+
+  const handleLogout = () => {
+    if (user) {
+      toast.info("user logout successfully ");
+      logout();
+    } else {
+      toast.warning("user already logout");
+    }
+  };
+
   return (
     <header className="relative">
       <nav className="bg-slate-50 shadow-md py-4 px-4 md:px-6">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to={'/'} className="flex items-center text-2xl font-bold">Shopalyst</Link>
+          <Link to={"/"} className="flex items-center text-2xl font-bold">
+            Shopalyst
+          </Link>
 
           {/* Mobile Menu Button */}
           <button
@@ -62,12 +92,17 @@ const Header = ({ cart, wishlist , searchQuery , setSearchQuery }) => {
 
             {/* Desktop User Actions */}
             <div className="flex items-center space-x-4">
-              <Link to="/login" className="bg-gray-100 p-2 rounded-md">
-                Login
-              </Link>
-              <Link to="/signup" className="bg-gray-100 p-2 rounded-md">
-                Signup
-              </Link>
+              {!user && (
+                <>
+                  <Link to="/login" className="bg-gray-100 p-2 rounded-md">
+                    Login
+                  </Link>
+                  <Link to="/signup" className="bg-gray-100 p-2 rounded-md">
+                    Signup
+                  </Link>
+                </>
+              )}
+
               <Link
                 to="/wishlist"
                 className="hover:bg-gray-100 p-2 rounded-full relative"
@@ -98,7 +133,7 @@ const Header = ({ cart, wishlist , searchQuery , setSearchQuery }) => {
                         Profile
                       </Link>
                       <button
-                        onClick={() => logout()}
+                        onClick={handleLogout}
                         className="mt-2 text-red-600 hover:text-red-500 transition duration-200"
                       >
                         Logout
@@ -195,7 +230,7 @@ const Header = ({ cart, wishlist , searchQuery , setSearchQuery }) => {
                     Profile
                   </Link>
                   <button
-                    onClick={() => logout()}
+                    onClick={handleLogout}
                     className="block w-full text-left mt-2 text-red-600 hover:text-red-500 transition duration-200"
                   >
                     Logout
