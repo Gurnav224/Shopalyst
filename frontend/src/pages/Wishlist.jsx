@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
 import { Trash2Icon, ShoppingCartIcon , Heart } from "lucide-react";
-import { ToastContainer } from "react-toastify";
 
 const Wishlist = ({
   wishlist,
@@ -15,7 +14,6 @@ const Wishlist = ({
       <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-8 text-gray-800 text-center">
         My Wishlist ({wishlist.length || 0})
       </h1>
-      <ToastContainer/>
       
       {wishlist.length === 0 ? (
         <div className="text-center py-16 bg-gray-50 rounded-lg">
