@@ -1,13 +1,12 @@
 /* eslint-disable react/prop-types */
-import { useEffect , useContext , useState, createContext } from "react";
-import {toast} from "react-toastify"
+import { useEffect, useContext, useState, createContext } from "react";
 
-const apiUrl = import.meta.env.VITE_API_URL_VERCEL;
+const apiUrl = import.meta.env.VITE_API_URL_Local;
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,55 +14,48 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem("token");
     const userData = JSON.parse(localStorage.getItem("user"));
 
-    
+    console.log(userData);
 
     if (token && userData) {
       setUser(userData);
     }
 
-      setLoading(false);
-    
+    setLoading(false);
   }, []);
 
-  const signup = async (name, email, password) => {
-   try {
-       const response = await fetch(`${apiUrl}/signup`,{
-        method:"POST",
-        headers:{
-          'Content-Type':'application/json'
-        },
-        body:JSON.stringify({name, email, password})
-       });
-
-
-       const data = await response.json();
-
-       console.log(' data',data)
-
-       if(!response.ok){
-        throw new Error(data.error)
-       }
-
-       return data;
-
-   } catch (error) {
-    console.error('error to signup ',error)
-    throw error
-   }
-  }
-
-  const login = async (email, password) => {
+  const signup = async (newUser) => {
     try {
-      console.log(apiUrl)
-      const response = await fetch(`${apiUrl}/login`,{
-        method:"POST",
-        headers:{
-          'Content-Type':'application/json'
+      const response = await fetch(`${apiUrl}/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        body:JSON.stringify({email, password})
-      })
+        body: JSON.stringify(newUser),
+      });
 
-      const data = await response.json()
+      const data = await response.json();
+
+      return data;
+    } catch (error) {
+      console.error("error to signup ", error);
+      throw error;
+    }
+  };
+
+  const login = async (loginUser) => {
+    try {
+      const response = await fetch(`${apiUrl}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginUser),
+      });
+
+      const data = await response.json();
+
+    
+
       if (!response.ok) {
         throw new Error(data.error);
       }
@@ -72,12 +64,6 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("user", JSON.stringify(data.user));
       setUser(data.user);
 
-      console.log(data);
-
-      setTimeout(() => {
-
-        window.location.reload()
-      },0)
       return data;
     } catch (error) {
       console.error("failed to login", error);
@@ -86,18 +72,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    toast('user logout successfully ')
-    setUser(null)
-  }
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+  };
 
   const value = {
     loading,
     user,
     login,
     signup,
-    logout
+    logout,
   };
 
   return (
