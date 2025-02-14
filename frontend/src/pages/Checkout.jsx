@@ -1,7 +1,7 @@
 import { Package, MapPin, CreditCard } from "lucide-react";
 import { orderAPI } from "../api/orders";
 import { useCallback, useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast, } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const Checkout = () => {
@@ -26,7 +26,7 @@ const Checkout = () => {
 
 
   const handleOrderConfirmation = () => {
-    toast(
+    toast.info(
     `
     Your Order is Confirmed , 
     Order Id: ${orders._id},
@@ -39,16 +39,17 @@ const Checkout = () => {
     `
     ) 
 
-    setTimeout(() => {
-      navigate('/cart')
-    }, 5000);
+   setTimeout(() => {
+
+    navigate('/products')
+   },5000)
+
   }
 
   
 
   return (
     <div className="max-w-5xl  mx-auto px-4 py-8 ">
-      <ToastContainer />
 
       <h1 className="text-2xl font-bold text-gray-900 mb-8">
         Checkout Details

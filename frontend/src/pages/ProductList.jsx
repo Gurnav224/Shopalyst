@@ -4,13 +4,10 @@ import { CiStar } from "react-icons/ci";
 import { FaStar } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
-import { ToastContainer } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
-import { categoryAPI } from '../api/category';
-import {productAPI } from '../api/products'
-import  { debounce } from "lodash"
-
-
+import { categoryAPI } from "../api/category";
+import { productAPI } from "../api/products";
+import { debounce } from "lodash";
 
 const ProductList = ({
   handleAddToCart,
@@ -19,7 +16,11 @@ const ProductList = ({
   isProductInWishlist,
   handleNavigateToCart,
   searchQuery,
-  setSearchQuery
+  setSearchQuery,
+  fetchCart,
+  wishlist,
+  fetchWishlist,
+  cart
 }) => {
   const [defaultProducts, setDefaultProducts] = useState([]); // original product list
   const [products, setProducts] = useState([]); // displayed products
@@ -28,15 +29,11 @@ const ProductList = ({
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [clearCheckbox, setClearCheckbox] = useState(false);
   const [selectedSort, setSelectedSort] = useState("");
-  const [loading , setLoading] = useState(false);
-  const [error , setError] = useState('');
-  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-
-
-
-
-  const { user } = useAuth()
+  const { user } = useAuth();
 
   const { category: categoryByParams } = useParams();
 
@@ -45,6 +42,19 @@ const ProductList = ({
       setSelectedCategory([categoryByParams]);
     }
   }, [categoryByParams]);
+
+  useEffect(() => {
+    if (cart?.length > 0) {
+      fetchCart();
+    }
+  }, [fetchCart, cart?.length]);
+
+  useEffect(() => {
+    if(wishlist?.length > 0){
+      fetchWishlist()
+    }
+  },[fetchWishlist, wishlist?.length])
+ 
 
   async function fetchProducts() {
     try {
@@ -58,7 +68,7 @@ const ProductList = ({
 
   useEffect(() => {
     fetchProducts();
-  }, [user ]);
+  }, [user]);
 
   useEffect(() => {
     async function fetchCategories() {
@@ -114,54 +124,42 @@ const ProductList = ({
   };
 
   const clearFilter = () => {
-    navigate('/products')
+    navigate("/products");
     setRatings(0);
     setSelectedCategory([]);
     setClearCheckbox(true);
     setSelectedSort("");
-    setSearchQuery("")
+    setSearchQuery("");
     setProducts(defaultProducts);
   };
 
-
-
   const debounchedSearch = debounce(async (query) => {
-    if(!query.trim()){
-      setProducts([])
+    if (!query.trim()) {
+      setProducts([]);
     }
 
     try {
-      setLoading(true)
-      const response = await productAPI.searchProducts(query)
+      setLoading(true);
+      const response = await productAPI.searchProducts(query);
 
-
-
-      setProducts(response)
-
-      
+      setProducts(response);
     } catch (error) {
-      setError('Failed to search products. Please try again.');
-      console.error('Search error:', error);
+      setError("Failed to search products. Please try again.");
+      console.error("Search error:", error);
+    } finally {
+      setLoading(false);
     }
-    finally{
-      setLoading(false)
-    }
-  })
+  });
+
+  useEffect(() => {
+    debounchedSearch(searchQuery);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]);
   
-  useEffect(()=>{
-    debounchedSearch(searchQuery)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[searchQuery]);
-
-
-
-
-
 
   return (
     <>
       <div className="container mx-auto my-6 px-4">
-      <ToastContainer/>
         <div className="flex flex-col md:flex-row gap-6">
           {/* Filters Section */}
           <div className="w-full md:w-1/4 bg-gray-100 p-4 rounded-lg shadow">
@@ -264,8 +262,6 @@ const ProductList = ({
 
           {/* Products Section */}
 
-  
-
           <div className="w-full md:w-3/4">
             <div className="flex items-center justify-between mb-6">
               <h5 className="text-2xl font-semibold">Showing All Products</h5>
@@ -274,25 +270,21 @@ const ProductList = ({
               </span>
             </div>
 
-              {/* Error Message */}
-      {error  && (
-        <div className="text-red-500 text-center py-4">
-          {error}
-        </div>
-      )}
+            {/* Error Message */}
+            {error && (
+              <div className="text-red-500 text-center py-4">{error}</div>
+            )}
 
             {/* Loading State */}
             {loading && (
-        <div className=" py-4  text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-t-2 border-blue-500 mx-auto"></div>
-        </div>
-      )}
+              <div className=" py-4  text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-t-2 border-blue-500 mx-auto"></div>
+              </div>
+            )}
 
-    
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        
               {filteredProducts?.map((product) => (
-              <ProductCard
+                <ProductCard
                   key={product._id}
                   product={product}
                   handleAddToCart={handleAddToCart}
@@ -301,7 +293,6 @@ const ProductList = ({
                   handleNavigateToCart={handleNavigateToCart}
                   isProductInWishlist={isProductInWishlist}
                 />
-               
               ))}
             </div>
           </div>

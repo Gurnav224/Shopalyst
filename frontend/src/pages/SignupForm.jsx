@@ -1,35 +1,67 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer , toast} from "react-toastify";
-
 
 const SignForm = () => {
-  const [name , setName] = useState('')
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const navigate = useNavigate()
+  const [newUser, setNewUser] = useState({
+    name: "test_user1",
+    email: "test_user1@gmail.com",
+    password: "test_user1",
+  });
+  const [message, setMessage] = useState("");
+
+  const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
 
   const { signup } = useAuth();
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewUser((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    setError(null);
+    setMessage('')
+  };
+
+  const isEmailValid = (email) => {
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return pattern.test(email);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    toast('user signup successfully ')
-    try {
-      await signup(name, email, password);
-     
 
-      navigate('/login')
+    if(newUser.password.length <= 6){
+      toast.error('password should 6 character long');
+      return
+    }
 
-    } catch (error) {
-      setError(error.message);
+    const validation = isEmailValid(newUser.email);
+
+    if (validation) {
+      const data = await signup(newUser);
+      if (data.message) {
+        toast.success("Signup successfully");
+        navigate("/login");
+      }
+
+
+
+      if (data.error) {
+        setError(data.error);
+        toast.error(data.error);
+      }
+    } else {
+      setMessage("Invalid Email");
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <ToastContainer/>
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
@@ -38,7 +70,7 @@ const SignForm = () => {
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
-          <div>
+            <div>
               <label htmlFor="email" className="sr-only">
                 Name:
               </label>
@@ -47,8 +79,8 @@ const SignForm = () => {
                 name="name"
                 type="name"
                 required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={newUser.name}
+                onChange={handleInputChange}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="username"
               />
@@ -62,11 +94,12 @@ const SignForm = () => {
                 name="email"
                 type="email"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={newUser.email}
+                onChange={handleInputChange}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Email address"
               />
+              {message && <p className="text-red-500 my-1">{message}</p>}
             </div>
             <div>
               <label htmlFor="password" className="sr-only">
@@ -77,8 +110,8 @@ const SignForm = () => {
                 name="password"
                 type="password"
                 required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={newUser.password}
+                onChange={handleInputChange}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
               />

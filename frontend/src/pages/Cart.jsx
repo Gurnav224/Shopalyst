@@ -2,7 +2,6 @@
 import { useEffect } from "react";
 import { Heart, Minus, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 
 const Cart = ({
   cart,
@@ -28,7 +27,6 @@ const Cart = ({
         <h2 className="text-2xl font-bold mb-6">
           MY CART ({cart?.length || 0})
         </h2>
-        <ToastContainer />
 
         {cart?.length === 0 ? (
           <p className="text-gray-600 text-center">Your cart is empty.</p>

@@ -1,33 +1,64 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer , toast} from "react-toastify";
+import { toast } from "react-toastify";
 
 const LoginForm = () => {
-  const [email, setEmail] = useState("demo1@gmail.com");
-  const [password, setPassword] = useState("demo@123");
-  const [error, setError] = useState("");
-  const navigate = useNavigate()
+  const [loginUser, setLoginUser] = useState({
+    email: "",
+    password: "",
+  });
+  const [message, setMessage] = useState("");
+
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const { login } = useAuth();
 
+  const isEmailValid = (email) => {
+    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return pattern.test(email);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    toast('user login successfully ')
 
-    try {
-      await login(email, password);
+    if (isEmailValid(loginUser.email)) {
+      const data = await login(loginUser);
 
-      navigate('/')
+      if (data.message) {
+        toast.success("login successfully");
+        navigate("/");
+      }
 
-    } catch (error) {
-      setError(error.message);
+      if (data.error) {
+        toast.error(data.error);
+        setError(data.error);
+      }
+    } else {
+      setMessage("Invalid Email");
     }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setLoginUser((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    setError(null);
+    setMessage("");
+  };
+
+  const loginWithTestUser = () => {
+    setLoginUser({
+      email: "test_user1@gmail.com",
+      password: "test_user1",
+    });
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <ToastContainer/>
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
@@ -45,11 +76,12 @@ const LoginForm = () => {
                 name="email"
                 type="email"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={loginUser.email}
+                onChange={handleInputChange}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Email address"
               />
+              {message && <p className="text-red-500 my-1">{message}</p>}
             </div>
             <div>
               <label htmlFor="password" className="sr-only">
@@ -60,8 +92,8 @@ const LoginForm = () => {
                 name="password"
                 type="password"
                 required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={loginUser.password}
+                onChange={handleInputChange}
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
               />
@@ -77,13 +109,19 @@ const LoginForm = () => {
               </div>
             </div>
           )}
-
           <div>
             <button
               type="submit"
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Sign in
+            </button>
+            <button
+              type="button"
+              onClick={loginWithTestUser}
+              className="group my-3 relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Login in With Test user
             </button>
           </div>
         </form>
