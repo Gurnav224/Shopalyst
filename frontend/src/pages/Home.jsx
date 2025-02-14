@@ -49,7 +49,7 @@ const Home = () => {
                 </div>
                 <div className="w-2/3 p-4">
                   <p className="text-sm text-gray-500">New Arrivals</p>
-                  <h5 className="text-lg font-semibold">Summer Collection</h5>
+                  <h5 className="text-3xl font-semibold">Summer Collection</h5>
                   <p className="text-sm text-gray-400 mt-2">
                     Check out our best collection to stay warm in style this
                     season.
