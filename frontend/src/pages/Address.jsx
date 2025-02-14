@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { addressAPI } from "../api/address";
 import { MapPin } from "lucide-react";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import { orderAPI } from "../api/orders";
 import { useNavigate } from "react-router-dom";
 
@@ -103,7 +103,6 @@ const Address = () => {
     <div className="max-w-5xl mx-auto  p-6 bg-white rounded-lg shadow-md my-11">
       <div className="flex justify-between">
         <div className="p-6 bg-white rounded-lg shadow-sm">
-          <ToastContainer />
 
           {allAddress.length > 0 ? (
             <div className="space-y-4">
