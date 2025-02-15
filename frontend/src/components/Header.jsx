@@ -39,12 +39,13 @@ const Header = ({
   }, [fetchWishlist, wishlist?.length]);
 
   const handleLogout = () => {
-    if (user?.email) {
-      toast.info("user logout successfully ");
-      logout();
+    if(user?.email){
+      toast.info('user logout successfully ')
+      logout()
       navigate('/login')
-    } else {
-      toast.warning("user already logout");
+    }
+    else{
+      toast.warn('user already logout')
     }
   };
 
@@ -98,13 +99,19 @@ const Header = ({
             {/* Desktop User Actions */}
             <div className="flex items-center space-x-4">
              
+            {
+              !user?.email && (
+               <>
 
-                  <Link to="/login" className="bg-gray-100 p-2 rounded-md">
+            <Link to="/login" className="bg-gray-100 p-2 rounded-md">
                     Login
                   </Link>
                   <Link to="/signup" className="bg-gray-100 p-2 rounded-md">
                     Signup
                   </Link>
+               </>
+              )
+             }
 
               <Link
                 to="/wishlist"

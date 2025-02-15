@@ -5,6 +5,7 @@ import { FaStar } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import { debounce } from "lodash";
+import { useAuth } from "../context/AuthContext";
 
 
 const apiUrl = import.meta.env.VITE_API_URL_VERCEL;
@@ -32,7 +33,7 @@ const ProductList = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
+  const { user } = useAuth();
 
   const { category: categoryByParams } = useParams();
 
@@ -46,13 +47,13 @@ const ProductList = ({
     if (cart?.length > 0) {
       fetchCart();
     }
-  }, [fetchCart, cart?.length]);
+  }, [fetchCart, cart?.length, user]);
 
   useEffect(() => {
     if(wishlist?.length > 0){
       fetchWishlist()
     }
-  },[fetchWishlist, wishlist?.length])
+  },[fetchWishlist, wishlist?.length , user])
  
 
   async function fetchProducts() {
