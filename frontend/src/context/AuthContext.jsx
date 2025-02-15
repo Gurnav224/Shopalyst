@@ -2,7 +2,7 @@
 
 import { useEffect, useContext, useState, createContext } from "react";
 
-const apiUrl = import.meta.env.VITE_API_URL_Local;
+const apiUrl = import.meta.env.VITE_API_URL_VERCEL;
 
 const AuthContext = createContext(null);
 

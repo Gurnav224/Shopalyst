@@ -1,12 +1,11 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
 import { Search, User, Heart, ShoppingCart, Menu, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
 
 
-const token = localStorage.getItem("token");
 
 
 const Header = ({
@@ -20,6 +19,7 @@ const Header = ({
   const { user, logout } = useAuth();
   const [userDetails, setUserDetails] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate()
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -39,10 +39,10 @@ const Header = ({
   }, [fetchWishlist, wishlist?.length]);
 
   const handleLogout = () => {
-    console.log(token)
-    if (token) {
+    if (user?.email) {
       toast.info("user logout successfully ");
       logout();
+      navigate('/login')
     } else {
       toast.warning("user already logout");
     }
