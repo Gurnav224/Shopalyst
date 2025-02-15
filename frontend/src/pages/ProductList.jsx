@@ -4,10 +4,10 @@ import { CiStar } from "react-icons/ci";
 import { FaStar } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
-import { useAuth } from "../context/AuthContext";
-import { categoryAPI } from "../api/category";
-import { productAPI } from "../api/products";
 import { debounce } from "lodash";
+
+
+const apiUrl = import.meta.env.VITE_API_URL_VERCEL;
 
 const ProductList = ({
   handleAddToCart,
@@ -33,7 +33,6 @@ const ProductList = ({
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const { user } = useAuth();
 
   const { category: categoryByParams } = useParams();
 
@@ -58,7 +57,8 @@ const ProductList = ({
 
   async function fetchProducts() {
     try {
-      const products = await productAPI.getAllProducts();
+      const response = await fetch(`${apiUrl}/products`);
+      const products = await response.json();
       setDefaultProducts(products?.products); // save original data
       setProducts(products?.products); // set displayed data
     } catch (error) {
@@ -68,19 +68,20 @@ const ProductList = ({
 
   useEffect(() => {
     fetchProducts();
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const categories = await categoryAPI.getFeaturedCategory();
+        const response = await fetch(`${apiUrl}/categories`);
+        const categories = await response.json();
         setCategories(categories?.data?.categories);
       } catch (error) {
         console.error("Failed to fetch categories", error);
       }
     }
     fetchCategories();
-  }, [user]);
+  }, []);
 
   const handleChangeCategories = (event) => {
     const { value, checked } = event.target;
@@ -140,9 +141,11 @@ const ProductList = ({
 
     try {
       setLoading(true);
-      const response = await productAPI.searchProducts(query);
+      const response = await fetch(`${apiUrl}/products/search?query=${query}`);
 
-      setProducts(response);
+      const products = await response.json()
+
+      setProducts(products);
     } catch (error) {
       setError("Failed to search products. Please try again.");
       console.error("Search error:", error);

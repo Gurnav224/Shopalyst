@@ -5,6 +5,10 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
 
+
+const token = localStorage.getItem("token");
+
+
 const Header = ({
   cart,
   wishlist,
@@ -35,7 +39,8 @@ const Header = ({
   }, [fetchWishlist, wishlist?.length]);
 
   const handleLogout = () => {
-    if (user) {
+    console.log(token)
+    if (token) {
       toast.info("user logout successfully ");
       logout();
     } else {
@@ -92,16 +97,14 @@ const Header = ({
 
             {/* Desktop User Actions */}
             <div className="flex items-center space-x-4">
-              {!user && (
-                <>
+             
+
                   <Link to="/login" className="bg-gray-100 p-2 rounded-md">
                     Login
                   </Link>
                   <Link to="/signup" className="bg-gray-100 p-2 rounded-md">
                     Signup
                   </Link>
-                </>
-              )}
 
               <Link
                 to="/wishlist"
