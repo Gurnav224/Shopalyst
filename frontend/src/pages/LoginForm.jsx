@@ -10,10 +10,9 @@ const LoginForm = () => {
   });
   const [message, setMessage] = useState("");
 
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const { login } = useAuth();
+  const { login , error, setError } = useAuth();
 
   const isEmailValid = (email) => {
     const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

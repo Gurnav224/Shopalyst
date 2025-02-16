@@ -11,11 +11,10 @@ const SignForm = () => {
   });
   const [message, setMessage] = useState("");
 
-  const [error, setError] = useState(null);
 
   const navigate = useNavigate();
 
-  const { signup } = useAuth();
+  const { signup , error , setError} = useAuth();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

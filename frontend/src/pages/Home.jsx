@@ -1,23 +1,15 @@
-import { useEffect, useState } from "react";
 import CategoriesSlider from "../components/CategoriesSlider";
 import BannerSlider from "../components/BannerSlider";
-import {categoryAPI } from '../api/category'
+import useFetch from "../hooks/useFetch";
 
 const Home = () => {
-  const [categories, setCategories] = useState([]);
 
-  useEffect(() => {
-    async function fetchCategories() {
-      try {
-        const categories = await categoryAPI?.getFeaturedCategory();
-        setCategories(categories?.data?.categories);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    }
+  const {data, loading , error} = useFetch('/categories',[]);
 
-    fetchCategories();
-  }, []);
+const categories = data?.data?.categories || []
+ 
+ 
+ 
 
   return (
     <>
@@ -29,6 +21,8 @@ const Home = () => {
         <h2 className="text-center my-8 text-5xl font-bold underline">Our Categories</h2>
 
         <div className="container mx-auto">
+          {loading && <p className="text-center text-2xl">loading categories</p>}
+          {error && <p className="text-center text-2xl text-red-500">{error}</p>}
           <CategoriesSlider categories={categories} />
         </div>
 

@@ -1,14 +1,15 @@
+/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react/prop-types */
 
 import { useEffect, useContext, useState, createContext } from "react";
-
-const apiUrl = import.meta.env.VITE_API_URL_VERCEL;
+import api from "../services/clientAPI";
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     // Check if user is logged in
@@ -26,40 +27,22 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (newUser) => {
     try {
-      const response = await fetch(`${apiUrl}/signup`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newUser),
-      });
+      const response = await api.post("/signup", newUser);
 
-      const data = await response.json();
+      const data = await response.data;
 
       return data;
     } catch (error) {
-      console.error("error to signup ", error);
-      throw error;
+      console.error('Error to signup ', error)
+      setError(error?.response?.data?.error || 'Something went wrong')
     }
   };
 
   const login = async (loginUser) => {
     try {
-      const response = await fetch(`${apiUrl}/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(loginUser),
-      });
+      const response = await api.post("/login", loginUser);
 
-      const data = await response.json();
-
-    
-
-      if (!response.ok) {
-        throw new Error(data.error);
-      }
+      const data = response.data;
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
@@ -68,7 +51,7 @@ export const AuthProvider = ({ children }) => {
       return data;
     } catch (error) {
       console.error("failed to login", error);
-      throw error;
+      setError(error?.response?.data?.error || 'Something went wrong')
     }
   };
 
@@ -84,6 +67,8 @@ export const AuthProvider = ({ children }) => {
     login,
     signup,
     logout,
+    error,
+    setError
   };
 
   return (

@@ -5,10 +5,9 @@ import { FaStar } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import { debounce } from "lodash";
-import { useAuth } from "../context/AuthContext";
 
 
-const apiUrl = import.meta.env.VITE_API_URL_VERCEL;
+
 
 const ProductList = ({
   handleAddToCart,
@@ -18,10 +17,6 @@ const ProductList = ({
   handleNavigateToCart,
   searchQuery,
   setSearchQuery,
-  fetchCart,
-  wishlist,
-  fetchWishlist,
-  cart
 }) => {
   const [defaultProducts, setDefaultProducts] = useState([]); // original product list
   const [products, setProducts] = useState([]); // displayed products
@@ -33,7 +28,6 @@ const ProductList = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   const { category: categoryByParams } = useParams();
 
@@ -43,22 +37,11 @@ const ProductList = ({
     }
   }, [categoryByParams]);
 
-  useEffect(() => {
-    if (cart?.length > 0) {
-      fetchCart();
-    }
-  }, [fetchCart, cart?.length, user]);
-
-  useEffect(() => {
-    if(wishlist?.length > 0){
-      fetchWishlist()
-    }
-  },[fetchWishlist, wishlist?.length , user])
  
 
   async function fetchProducts() {
     try {
-      const response = await fetch(`${apiUrl}/products`);
+      const response = await fetch(`/api/products`);
       const products = await response.json();
       setDefaultProducts(products?.products); // save original data
       setProducts(products?.products); // set displayed data
@@ -74,7 +57,7 @@ const ProductList = ({
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const response = await fetch(`${apiUrl}/categories`);
+        const response = await fetch(`/api/categories`);
         const categories = await response.json();
         setCategories(categories?.data?.categories);
       } catch (error) {
@@ -142,7 +125,7 @@ const ProductList = ({
 
     try {
       setLoading(true);
-      const response = await fetch(`${apiUrl}/products/search?query=${query}`);
+      const response = await fetch(`/api/products/search?query=${query}`);
 
       const products = await response.json()
 
