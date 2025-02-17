@@ -12,10 +12,7 @@ const useAxios = (endpoint) => {
 
     try {
       const response = await api.get(endpoint);
-      console.log("response data", response?.data);
-
       setData(response?.data);
-
       return response?.data;
     } catch (error) {
       setError(error.message);
@@ -24,7 +21,7 @@ const useAxios = (endpoint) => {
     }
   }, [endpoint]);
 
-  return { data, loading, error, get };
+  return { data, loading, error, get , setData};
 };
 
 export default useAxios;
