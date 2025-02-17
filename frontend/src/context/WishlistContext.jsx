@@ -29,7 +29,8 @@ export const WishlistProvider = ({children}) => {
           useEffect(() => {
             fetchWishlist()
           },[fetchWishlist])
-          console.log(wishlist)
+
+          
           const isProductInWishlist = (productId) => {
             return wishlist?.some((item) => {
               return item?.product?._id === productId;
@@ -39,6 +40,7 @@ export const WishlistProvider = ({children}) => {
           const handleAddToWishlist = async (product, e) => {
             e.stopPropagation();
             e.preventDefault();
+            toast.success("Item added to wishlist");
         
             const { _id } = product;
             const previousWishlist = [...wishlist]; // Backup current state
@@ -61,9 +63,8 @@ export const WishlistProvider = ({children}) => {
             try {
               // API call to update the wishlist on the server
               const response = await wishlistAPI.addToWishlist(_id, 1);
-              toast.success("Item added to wishlist");
-        
               await fetchWishlist();
+                
               // Validate the API response
               if (!response || response.message !== "Product added to wishlist") {
                 throw new Error(response?.message || "Unknown server error");
@@ -80,16 +81,18 @@ export const WishlistProvider = ({children}) => {
         
             // Store the previous wishlist state
             const previousWishlist = [...wishlist];
+            toast.info("item removed from the wishlist");
+
         
             // Optimistically update the UI
             setWishlist((prev) =>
               prev.filter((item) => item?.product?._id !== productId)
             );
+
         
             try {
               // Make the API call
               const response = await wishlistAPI.removeFromWishlist(productId);
-              toast.info("item removed from the wishlist");
         
               // If the API call fails, revert the state
               if (response.message !== "product remove the wishlist") {
