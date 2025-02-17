@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate , useLocation} from "react-router-dom";
 import { toast } from "react-toastify";
 
 const LoginForm = () => {
+  const { login , error, setError } = useAuth();
+
+
   const [loginUser, setLoginUser] = useState({
     email: "",
     password: "",
@@ -11,8 +14,13 @@ const LoginForm = () => {
   const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
+   const location = useLocation();
+  
+  
+    useEffect(() => {
+      setError('')
+    },[location.pathname, setError])
 
-  const { login , error, setError } = useAuth();
 
   const isEmailValid = (email) => {
     const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
