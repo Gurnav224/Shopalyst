@@ -2,20 +2,15 @@ const mongoose = require("mongoose");
 
 const connetDB = async () => {
   try {
-    let connnectionUrl;
+    const  urlObjects = {
+      production:process.env.MONGODB,
+      development:process.env.localDB
+    };
 
-    console.log(process.env.NODE_ENV)
+    const mode = process.argv[2];
 
-    if (process.env.NODE_ENV === "Production") {
-      connnectionUrl = process.env.MONGODB;
-    } else {
-      if(process.env.localDB){
-      connnectionUrl = process.env.localDB;
-       }
-      connnectionUrl = process.env.MONGODB;
-    }
 
-    const connection = await mongoose.connect(connnectionUrl, {
+    const connection = await mongoose.connect(urlObjects[mode], {
       dbName: "EcommerceDB",
     });
 

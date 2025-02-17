@@ -5,9 +5,8 @@
   "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "NODE_ENV=Production node app",
-    "dev": "NODE_ENV=Development nodemon app",
-    "prodev":"NODE_ENV=Production nodemon app"
+    "start": "node app.js production",
+    "dev": "nodemon app.js development"
   },
   "keywords": [],
   "author": "",
