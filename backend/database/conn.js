@@ -10,7 +10,7 @@ const connetDB = async () => {
     const mode = process.argv[2];
 
 
-    const connection = await mongoose.connect(urlObjects[mode], {
+    const connection = await mongoose.connect(process.env.MONGODB , {
       dbName: "EcommerceDB",
     });
 
