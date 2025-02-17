@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     // Check if user is logged in
     const token = localStorage.getItem("token");
-    const userData = JSON.parse(localStorage.getItem("user"));
+    const userData =  localStorage.getItem("user") ;
 
     console.log(userData);
 
@@ -27,14 +27,15 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (newUser) => {
     try {
+      
       const response = await api.post("/signup", newUser);
-
       const data = await response.data;
 
       return data;
     } catch (error) {
-      console.error('Error to signup ', error)
+      console.error('Error to signup ', error?.response?.data?.error)
       setError(error?.response?.data?.error || 'Something went wrong')
+
     }
   };
 
@@ -50,7 +51,7 @@ export const AuthProvider = ({ children }) => {
 
       return data;
     } catch (error) {
-      console.error("failed to login", error);
+      console.error("failed to login", error?.response?.data?.error);
       setError(error?.response?.data?.error || 'Something went wrong')
     }
   };
