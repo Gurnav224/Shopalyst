@@ -1,20 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const SignForm = () => {
+  const { signup , error , setError} = useAuth();
+
   const [newUser, setNewUser] = useState({
     name: "test_user1",
     email: "test_user1@gmail.com",
     password: "test_user1",
   });
   const [message, setMessage] = useState("");
+  const location = useLocation();
 
+
+  useEffect(() => {
+    setError('')
+  },[location.pathname, setError])
 
   const navigate = useNavigate();
 
-  const { signup , error , setError} = useAuth();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -43,13 +49,11 @@ const SignForm = () => {
 
     if (validation) {
       const data = await signup(newUser);
+
       if (data.message) {
         toast.success("Signup successfully");
         navigate("/login");
       }
-
-
-
       if (data.error) {
         setError(data.error);
         toast.error(data.error);

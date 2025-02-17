@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import api from "../services/clientAPI";
 
-const useFetch = (endpoint) => {
+const useAxios = (endpoint) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
@@ -12,10 +12,7 @@ const useFetch = (endpoint) => {
 
     try {
       const response = await api.get(endpoint);
-      console.log("response data", response?.data);
-
       setData(response?.data);
-
       return response?.data;
     } catch (error) {
       setError(error.message);
@@ -24,7 +21,7 @@ const useFetch = (endpoint) => {
     }
   }, [endpoint]);
 
-  return { data, loading, error, get };
+  return { data, loading, error, get , setData};
 };
 
-export default useFetch;
+export default useAxios;

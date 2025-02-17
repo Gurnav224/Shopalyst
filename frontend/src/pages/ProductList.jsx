@@ -5,23 +5,12 @@ import { FaStar } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import { debounce } from "lodash";
+import useFetch from "../hooks/useAxios";
 
-
-
-
-const ProductList = ({
-  handleAddToCart,
-  handleAddToWishlist,
-  isProductInCart,
-  isProductInWishlist,
-  handleNavigateToCart,
-  searchQuery,
-  setSearchQuery,
-}) => {
+const ProductList = ({ searchQuery, setSearchQuery }) => {
   const [defaultProducts, setDefaultProducts] = useState([]); // original product list
   const [products, setProducts] = useState([]); // displayed products
   const [ratings, setRatings] = useState(0);
-  const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [clearCheckbox, setClearCheckbox] = useState(false);
   const [selectedSort, setSelectedSort] = useState("");
@@ -29,7 +18,12 @@ const ProductList = ({
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  const { data: categories, get: getCategories } = useFetch("/categories");
+  const { data: productsData, get: getProducts } = useFetch("/products");
+
   const { category: categoryByParams } = useParams();
+
+ 
 
   useEffect(() => {
     if (categoryByParams) {
@@ -37,35 +31,18 @@ const ProductList = ({
     }
   }, [categoryByParams]);
 
- 
-
-  async function fetchProducts() {
-    try {
-      const response = await fetch(`/api/products`);
-      const products = await response.json();
-      setDefaultProducts(products?.products); // save original data
-      setProducts(products?.products); // set displayed data
-    } catch (error) {
-      console.error("Error fetching products", error);
-    }
-  }
+  useEffect(() => {
+    getProducts();
+  }, [getProducts]);
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    setDefaultProducts(productsData?.products);
+    setProducts(productsData?.products);
+  }, [productsData]);
 
   useEffect(() => {
-    async function fetchCategories() {
-      try {
-        const response = await fetch(`/api/categories`);
-        const categories = await response.json();
-        setCategories(categories?.data?.categories);
-      } catch (error) {
-        console.error("Failed to fetch categories", error);
-      }
-    }
-    fetchCategories();
-  }, []);
+    getCategories();
+  }, [getCategories]);
 
   const handleChangeCategories = (event) => {
     const { value, checked } = event.target;
@@ -127,7 +104,7 @@ const ProductList = ({
       setLoading(true);
       const response = await fetch(`/api/products/search?query=${query}`);
 
-      const products = await response.json()
+      const products = await response.json();
 
       setProducts(products);
     } catch (error) {
@@ -142,7 +119,6 @@ const ProductList = ({
     debounchedSearch(searchQuery);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
-  
 
   return (
     <>
@@ -271,15 +247,7 @@ const ProductList = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProducts?.map((product) => (
-                <ProductCard
-                  key={product._id}
-                  product={product}
-                  handleAddToCart={handleAddToCart}
-                  handleAddToWishlist={handleAddToWishlist}
-                  isProductInCart={isProductInCart}
-                  handleNavigateToCart={handleNavigateToCart}
-                  isProductInWishlist={isProductInWishlist}
-                />
+                <ProductCard key={product._id} product={product} />
               ))}
             </div>
           </div>

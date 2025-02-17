@@ -1,15 +1,14 @@
 /* eslint-disable react/prop-types */
 import { Link, useNavigate } from "react-router-dom";
 import { Star, ShoppingCartIcon, Heart } from "lucide-react";
+import { useCart } from "../context/CartContext";
+import { useWislist } from "../context/WishlistContext";
 
-const ProductCard = ({
-  product,
-  handleAddToCart,
-  handleAddToWishlist,
-  isProductInCart,
-  isProductInWishlist,
-}) => {
+const ProductCard = ({ product }) => {
   const navigate = useNavigate();
+  const { handleAddToCart, isProductInCart } = useCart();
+  const { isProductInWishlist, handleAddToWishlist } = useWislist();
+
   const handleNavigateToCart = (e) => {
     e.stopPropagation();
     e.preventDefault();

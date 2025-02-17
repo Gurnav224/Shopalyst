@@ -4,13 +4,14 @@ import { useCallback, useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard.jsx";
 import { Star, ShoppingCart } from "lucide-react";
 import { productAPI } from "../api/products.js";
+import { useCart } from "../context/CartContext.jsx";
+import { useWislist } from "../context/WishlistContext.jsx";
 
-const ProductDetails = ({
-  handleAddToCart,
-  handleAddToWishlist,
-  isProductInCart,
-  isProductInWishlist,
-}) => {
+const ProductDetails = () => {
+
+  const { handleAddToCart, isProductInCart} = useCart();
+  const { handleAddToWishlist, isProductInWishlist} = useWislist()
+
   const { productId } = useParams();
   const [product, setProduct] = useState({});
   const [relatedProducts, setRelatedProducts] = useState([]);

@@ -1,15 +1,16 @@
 import CategoriesSlider from "../components/CategoriesSlider";
 import BannerSlider from "../components/BannerSlider";
-import useFetch from "../hooks/useFetch";
+import useFetch from "../hooks/useAxios";
+import { useEffect } from "react";
 
 const Home = () => {
 
-  const {data, loading , error} = useFetch('/categories',[]);
+  const {data:categories , loading , error, get:getCategories} = useFetch('/categories',[]);
 
-const categories = data?.data?.categories || []
- 
- 
- 
+  useEffect(() => {
+    getCategories()
+  },[getCategories])
+
 
   return (
     <>

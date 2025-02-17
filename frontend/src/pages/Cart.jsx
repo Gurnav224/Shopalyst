@@ -1,25 +1,20 @@
 /* eslint-disable react/prop-types */
-import { useEffect } from "react";
 import { Heart, Minus, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useCart } from "../context/CartContext";
+import { useEffect } from "react";
+import { useWislist } from "../context/WishlistContext";
 
-const Cart = ({
-  cart,
-  removeItemFromCart,
-  totalCart,
-  fetchCart,
-  updateQuantity,
-  handleAddToWishlist,
-  isProductInWishlist,
-}) => {
-  const totalPrice =
-    cart?.reduce((sum, item) => sum + item.price * item.quantity, 0) || 0;
+const Cart = () => {
+  const { cart,  fetchCart, removeItemFromCart, updateQuantity } =
+    useCart();
+  const { handleAddToWishlist, isProductInWishlist } = useWislist();
+
+  const totalAmount = cart?.reduce((acc,product) => acc + product.price*product.quantity ,0);
 
   useEffect(() => {
-    if (cart?.length > 0) {
-      fetchCart();
-    }
-  }, [fetchCart, cart?.length]);
+    fetchCart();
+  }, [fetchCart]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -114,17 +109,13 @@ const Cart = ({
             </div>
 
             {/* Price Details - Takes up 1 column */}
-            {cart.length > 0 && (
+            {cart?.length > 0 && (
               <div className="bg-white rounded-lg p-6 h-fit">
                 <h3 className="text-lg font-semibold mb-4">PRICE DETAILS</h3>
                 <div className="space-y-3 border-b pb-4 mb-4">
                   <div className="flex justify-between">
                     <span>Price ({cart?.length || 0} item)</span>
-                    <span>
-                      $
-                      {totalPrice.toLocaleString() ||
-                        totalCart.toLocaleString()}
-                    </span>
+                    <span>${totalAmount?.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between text-green-600">
                     <span>Discount</span>
@@ -139,8 +130,8 @@ const Cart = ({
                   <span>TOTAL AMOUNT</span>
                   <span>
                     $
-                    {(totalPrice - 10 + 49).toLocaleString() ||
-                      (totalCart - 10 + 49).toLocaleString()}
+                    {(totalAmount - 10 + 49).toLocaleString() ||
+                      (totalAmount - 10 + 49).toLocaleString()}
                   </span>
                 </div>
                 <p className="text-green-600 mb-4">
