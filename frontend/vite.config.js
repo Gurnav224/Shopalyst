@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
   return {
     server: {
       proxy: {
-        "/api": env?.VITE_API_URL_Local,
+        "/api": env?.VITE_API_URL_VERCEL,
       },
     },
     plugins: [react()],
