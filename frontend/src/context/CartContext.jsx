@@ -32,21 +32,24 @@ export const CartProvider = ({ children }) => {
     e.preventDefault();
     //exiting product cart ;
 
+    toast.success("Item added to cart");
+
     const { _id: productId } = product;
 
     try {
       const response = await api.post("/cart", { productId });
-      toast.success("product added to cart");
 
       console.log("add to cart response", response.data.cart.items);
       setCart(response?.data?.cart?.items);
     } catch (error) {
       console.error("failed to add to cart", error);
+     toast.error('failed to add item to cart')
     }
   };
 
   const removeItemFromCart = async (productId) => {
     // console.log('Item to removed from the cart',productId);
+    toast.info("Item removed from cart successfully");
 
     const previousCartList = [...cart];
 
@@ -54,8 +57,6 @@ export const CartProvider = ({ children }) => {
 
     try {
       const response = await api.delete(`/cart`, { data: { productId } });
-      console.log(response?.data.cart);
-      toast.success("Item removed from cart successfully");
       if (
         response?.data?.message !== "item from remove from cart successfully"
       ) {
