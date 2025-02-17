@@ -4,22 +4,17 @@ import { Search, User, Heart, ShoppingCart, Menu, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
+import { useCart } from "../context/CartContext";
+import { useWislist } from "../context/WishlistContext";
 
-
-
-
-const Header = ({
-  cart,
-  wishlist,
-  fetchCart,
-  fetchWishlist,
-  searchQuery,
-  setSearchQuery,
-}) => {
+const Header = ({ searchQuery, setSearchQuery }) => {
   const { user, logout } = useAuth();
   const [userDetails, setUserDetails] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
+  const { cart, fetchCart } = useCart();
+  const { wishlist, fetchWishlist } = useWislist();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -27,25 +22,20 @@ const Header = ({
   };
 
   useEffect(() => {
-    if (cart?.length > 0) {
-      fetchCart();
-    }
-  }, [fetchCart, cart?.length]);
+    fetchCart();
+  }, [fetchCart]);
 
   useEffect(() => {
-    if (wishlist?.length > 0) {
-      fetchWishlist();
-    }
-  }, [fetchWishlist, wishlist?.length]);
+    fetchWishlist();
+  }, [fetchWishlist]);
 
   const handleLogout = () => {
-    if(user?.email){
-      toast.info('user logout successfully ')
-      logout()
-      navigate('/login')
-    }
-    else{
-      toast.warn('user already logout')
+    if (user?.email) {
+      toast.info("user logout successfully ");
+      logout();
+      navigate("/login");
+    } else {
+      toast.warn("user already logout");
     }
   };
 
@@ -98,20 +88,16 @@ const Header = ({
 
             {/* Desktop User Actions */}
             <div className="flex items-center space-x-4">
-             
-            {
-              !user?.email && (
-               <>
-
-            <Link to="/login" className="bg-gray-100 p-2 rounded-md">
+              {!user?.email && (
+                <>
+                  <Link to="/login" className="bg-gray-100 p-2 rounded-md">
                     Login
                   </Link>
                   <Link to="/signup" className="bg-gray-100 p-2 rounded-md">
                     Signup
                   </Link>
-               </>
-              )
-             }
+                </>
+              )}
 
               <Link
                 to="/wishlist"
@@ -119,7 +105,7 @@ const Header = ({
               >
                 <Heart className="text-gray-700" size={24} />
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-1">
-                  {user ? wishlist?.length : 0}
+                  {wishlist?.length || 0}
                 </span>
               </Link>
               {/* User Profile Wrapper */}
@@ -158,7 +144,7 @@ const Header = ({
               >
                 <ShoppingCart className="text-gray-700" size={24} />
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-1">
-                  {user ? cart?.length : 0}
+                  {cart?.length || 0}
                 </span>
               </Link>
             </div>
@@ -216,13 +202,13 @@ const Header = ({
                 <Link to="/wishlist" className="relative">
                   <Heart className="text-gray-700" size={24} />
                   <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-1">
-                    {user ? wishlist?.length : 0}
+                    {wishlist?.length || 0}
                   </span>
                 </Link>
                 <Link to="/cart" className="relative">
                   <ShoppingCart className="text-gray-700" size={24} />
                   <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-1">
-                    {user ? cart?.length : 0}
+                    {cart?.length || 0}
                   </span>
                 </Link>
               </div>
