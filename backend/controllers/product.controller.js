@@ -1,11 +1,16 @@
 const Product = require("../models/product.model");
 
-exports.getAllProducts = async (req, res) => {
+exports.getProducts = async (req, res) => {
+  let query = {};
+  const searchTerm = req.query.search
+  if(searchTerm){
+    query.name = { $regex: searchTerm, $options: 'i' }
+  }
   try {
-    const products = await Product.find({});
+    const products = await Product.find(query);
 
-    if (products.length === 0) {
-      return res.status(400).json({ error: "no products found" });
+    if(products.length === 0) {
+      return res.status(400).json({error:'No products found with this name'})
     }
 
     res.json({ message: "get all products", products });
@@ -34,7 +39,6 @@ exports.getSingleProduct = async (req, res) => {
 exports.updateProductQuantity = async (req, res) => {
   const { id } = req.params;
   const { quantity } = req.body;
-  console.log(id, quantity);
   try {
     const updateProductQuantity = await Product.findByIdAndUpdate(
       id,
@@ -45,7 +49,7 @@ exports.updateProductQuantity = async (req, res) => {
       .status(200)
       .json({ message: "product updated successfully", updateProductQuantity });
   } catch (error) {
-    res.status(500).json({ error: "failed to update product quantity" });
+    res.status(500).json({error:'failed to update the product quantity'});
   }
 };
 
@@ -68,24 +72,3 @@ exports.getProductsByCategory = async (req, res) => {
   }
 };
 
-exports.searchProducts = async (req , res) => {
-  const { query } = req.query;
-  console.log(query)
-  try{
-    if(!query) {
-      const products = await Product.find()
-      return res.json(products)
-    }
-    
-    const searchPattern = new RegExp(query, 'i');
-    
-    const products = await Product.find({ name: searchPattern });
-    
-    res.json(products)
-    
-  }
-  catch(error){
-    console.error('failed to fetch product by query', query);
-    res.status(500).json({ error: error.message})
-  }
-}
