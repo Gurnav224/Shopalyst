@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { User, ShoppingCart, Heart, Package } from 'lucide-react';
-import { userAPI } from '../api/user';
+import api from '../services/clientAPI';
 
 const UserProfile = () => {
   const [userData, setUserData] = useState(null);
@@ -9,8 +9,8 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await userAPI.getuser();
-        setUserData(response.user);
+        const response = await api.get('/users');
+       setUserData(response?.data?.user);
         setLoading(false);
       } catch (error) {
         console.error('Failed to get user', error);
