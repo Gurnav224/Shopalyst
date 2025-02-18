@@ -3,9 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard.jsx";
 import { Star, ShoppingCart } from "lucide-react";
-import { productAPI } from "../api/products.js";
 import { useCart } from "../context/CartContext.jsx";
 import { useWislist } from "../context/WishlistContext.jsx";
+import api from '../services/clientAPI.js'
 
 const ProductDetails = () => {
 
@@ -19,22 +19,22 @@ const ProductDetails = () => {
 
   const updateProduct = async (id, updatedQuantity) => {
     try {
-      const data = await productAPI?.updateProductQuantity(id, updatedQuantity);
-      if (data) {
-        console.log("data successfully updated", data);
+      const response = await api.put(`/products/updateQuantity/${id}`,{quantity:updatedQuantity});
+
+      if (response.status === 200) {
         setProduct((prevProduct) => ({
           ...prevProduct,
           quantity: updatedQuantity,
         }));
       }
     } catch (error) {
-      console.error("Failed to update the product quantity", error);
+      console.error(error?.response?.data?.error || "Failed to update the product quantity" );
     }
   };
 
   const fetchProductById = useCallback(async () => {
-    const product = await productAPI?.getProductById(productId);
-    setProduct(product?.product);
+    const response = await api.get(`/products/${productId}`);
+    setProduct(response?.data?.product);
   }, [productId]);
 
   useEffect(() => {
@@ -52,17 +52,11 @@ const ProductDetails = () => {
   };
 
   const fetchCategoriesProduct = useCallback(async () => {
-    if (!product?.category || !productAPI?.relatedCategoryProducts) {
-      console.error("Invalid product category or API method");
-      return;
-    }
-
     try {
-      const data = await productAPI.relatedCategoryProducts(product.category);
-      setRelatedProducts(data?.products || []);
+      const response = await api.get(`/products/category/${product?.category}`);
+      setRelatedProducts(response?.data?.products || []);
     } catch (error) {
-      console.error("Failed to get related category product", error);
-      console.error("Error details:", error.response || error.message || error);
+      console.error("Error details:",  error.response?.data?.message );
     }
   }, [product?.category]);
 
@@ -71,6 +65,7 @@ const ProductDetails = () => {
       fetchCategoriesProduct();
     }
   }, [fetchCategoriesProduct, product?.category]);
+
 
   const handleNavigateToCart = (e) => {
     e.stopPropagation();
