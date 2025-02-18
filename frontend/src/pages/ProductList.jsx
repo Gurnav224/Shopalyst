@@ -7,6 +7,7 @@ import ProductCard from "../components/ProductCard";
 import { debounce } from "lodash";
 import useFetch from "../hooks/useAxios";
 import api from "../services/clientAPI";
+import { useWislist } from "../context/WishlistContext";
 
 const ProductList = ({ searchQuery, setSearchQuery }) => {
   const [defaultProducts, setDefaultProducts] = useState([]); // original product list
@@ -22,9 +23,13 @@ const ProductList = ({ searchQuery, setSearchQuery }) => {
   const { data: categories, get: getCategories } = useFetch("/categories");
   const { data: productsData, get: getProducts } = useFetch("/products");
 
-  const { category: categoryByParams } = useParams();
+  const {fetchWishlist , wishlist} = useWislist();
 
- 
+  useEffect(() => {
+    fetchWishlist()
+  },[fetchWishlist, wishlist.length])
+
+  const { category: categoryByParams } = useParams();
 
   useEffect(() => {
     if (categoryByParams) {
@@ -100,15 +105,22 @@ const ProductList = ({ searchQuery, setSearchQuery }) => {
     if (!query.trim()) {
       setProducts([]);
     }
-
     try {
       setLoading(true);
-      const response = await api.get(`/products/search?query=${query}`)
+      setError("");
 
-      setProducts(response?.data);
+      const response = await api.get(`/products?search=${query}`);
+
+      setProducts(response?.data?.products);
     } catch (error) {
-      setError("Failed to search products. Please try again.");
-      console.error("Search error:", error?.response?.data?.error || 'Something went wrong');
+      setError(
+        error?.response?.data?.error ||
+          "Failed to search products. Please try again."
+      );
+      console.error(
+        "Search error:",
+        error?.response?.data?.error || "Something went wrong"
+      );
     } finally {
       setLoading(false);
     }
