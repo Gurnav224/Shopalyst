@@ -13,7 +13,6 @@ export default defineConfig(({ mode }) => {
   return {
     server: {
       port: env.VITE_PORT || 3000,
-      open: true,
       proxy:
         mode === "development"
           ? {
@@ -29,6 +28,6 @@ export default defineConfig(({ mode }) => {
       alias: {
         "@": resolve(__dirname, "./src"),
       },
-    },
+    }
   };
 });
