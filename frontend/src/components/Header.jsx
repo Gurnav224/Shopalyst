@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
 import { Search, User, Heart, ShoppingCart, Menu, X } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import { useCart } from "../context/CartContext";
@@ -12,6 +12,7 @@ const Header = ({ searchQuery, setSearchQuery }) => {
   const [userDetails, setUserDetails] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const [searchParams , setSearchParams] = useSearchParams();
 
   const { cart, fetchCart } = useCart();
   const { wishlist, fetchWishlist } = useWislist();
@@ -38,6 +39,19 @@ const Header = ({ searchQuery, setSearchQuery }) => {
       toast.warn("user already logout");
     }
   };
+
+  const handleSearchChange = (e) => {
+    const {value} = e.target;
+    const newParams = new URLSearchParams(searchParams);
+    if(value) {
+      newParams.set('name', value)
+    }
+    else{
+      newParams.delete('name')
+    }
+    setSearchParams(newParams);
+    setSearchQuery(value)
+  }
 
   return (
     <header className="relative">
@@ -80,7 +94,7 @@ const Header = ({ searchQuery, setSearchQuery }) => {
                 type="text"
                 placeholder="Search products..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchChange}
                 className="focus:outline-none w-64"
               />
               <Search className="text-gray-500 ml-2" size={20} />
