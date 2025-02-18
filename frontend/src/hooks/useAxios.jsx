@@ -1,10 +1,14 @@
 import { useCallback, useState } from "react";
 import api from "../services/clientAPI";
 
+
+
 const useAxios = (endpoint) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
+
+  console.log(endpoint)
 
   const get = useCallback(async () => {
     setError("");

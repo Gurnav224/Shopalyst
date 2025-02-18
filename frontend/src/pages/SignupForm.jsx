@@ -118,6 +118,7 @@ const SignForm = () => {
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
               />
+             {newUser.password && newUser.password.length <=6 &&  <p className="text-red-600 py-2">password length must be 6 or greater</p>}
             </div>
           </div>
 

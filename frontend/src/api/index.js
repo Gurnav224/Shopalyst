@@ -1,6 +1,8 @@
 // const apiUrl = "http://localhost:3000/api";
+const apiUrl = import.meta.env.VITE_API_URL_VERCEL;
 const token = localStorage.getItem("token");
 
+console.log(apiUrl)
 
 
 export const apiRequest = async (endpoint, method = "GET", body = null) => {
@@ -10,7 +12,7 @@ export const apiRequest = async (endpoint, method = "GET", body = null) => {
       "Content-Type": "application/json",
     };
 
-    const response = await fetch(`/api/${endpoint}`, {
+    const response = await fetch(`${apiUrl}/api/${endpoint}`, {
       method: method,
       headers,
       body: body ? JSON.stringify(body) : null,

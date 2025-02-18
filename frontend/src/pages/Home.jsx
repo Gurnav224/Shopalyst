@@ -5,7 +5,8 @@ import { useEffect } from "react";
 
 const Home = () => {
 
-  const {data:categories , loading , error, get:getCategories} = useFetch('/categories',[]);
+
+  const {data:categories , loading , error, get:getCategories} = useFetch(`/categories`,[]);
 
   useEffect(() => {
     getCategories()

@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import { debounce } from "lodash";
 import useFetch from "../hooks/useAxios";
+import api from "../services/clientAPI";
 
 const ProductList = ({ searchQuery, setSearchQuery }) => {
   const [defaultProducts, setDefaultProducts] = useState([]); // original product list
@@ -102,14 +103,12 @@ const ProductList = ({ searchQuery, setSearchQuery }) => {
 
     try {
       setLoading(true);
-      const response = await fetch(`/api/products/search?query=${query}`);
+      const response = await api.get(`/products/search?query=${query}`)
 
-      const products = await response.json();
-
-      setProducts(products);
+      setProducts(response?.data);
     } catch (error) {
       setError("Failed to search products. Please try again.");
-      console.error("Search error:", error);
+      console.error("Search error:", error?.response?.data?.error || 'Something went wrong');
     } finally {
       setLoading(false);
     }
