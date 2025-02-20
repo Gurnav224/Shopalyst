@@ -142,12 +142,16 @@ const Header = ({ searchQuery, setSearchQuery }) => {
                       >
                         Profile
                       </Link>
-                      <button
+                      {
+                      isAuthenticated && (
+                        <button
                         onClick={handleLogout}
                         className="mt-2 text-red-600 hover:text-red-500 transition duration-200"
                       >
                         Logout
                       </button>
+                      )
+                      }
                     </div>
                   </div>
                 )}
@@ -239,12 +243,16 @@ const Header = ({ searchQuery, setSearchQuery }) => {
                   >
                     Profile
                   </Link>
-                  <button
+                  {
+                   !isAuthenticated && (
+                    <button
                     onClick={handleLogout}
                     className="block w-full text-left mt-2 text-red-600 hover:text-red-500 transition duration-200"
                   >
                     Logout
                   </button>
+                   )
+                  }
                 </div>
               )}
             </div>
