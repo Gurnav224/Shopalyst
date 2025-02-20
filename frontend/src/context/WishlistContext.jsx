@@ -7,6 +7,7 @@ import {
 } from "react";
 import api from "../services/clientAPI";
 import { toast } from "react-toastify";
+import { useAuth } from "./AuthContext";
 
 const WishlistContext = createContext();
 
@@ -14,7 +15,7 @@ export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState([]);
 
 
-
+  const {isAuthenticated } = useAuth()
 
 
   const isProductInWishlist = (productId) => {
@@ -30,7 +31,10 @@ export const WishlistProvider = ({ children }) => {
       const previousWishlist = [...wishlist]; // Backup current state
 
       try {
-        toast.success("Item added to wishlist");
+        
+        if(isAuthenticated){
+
+          toast.success("Item added to wishlist",{position:'top-center'});
 
         const { _id } = product;
 
@@ -51,38 +55,41 @@ export const WishlistProvider = ({ children }) => {
         setWishlist(updatedWishlist);
 
         // API call to update the wishlist on the server
-        const response = await api.post(`/wishlist`, {
+          await api.post(`/wishlist`, {
           productId: _id,
           quantity: 1,
         });
-        console.log(response);
+
+        }
+        else{
+          toast.error('Please login to Proceed',{position:'top-center'})
+        }
 
       } catch (error) {
         toast.error(
-          error?.response?.data?.error || "Failed to add item to the wishlist:"
+          error?.response?.data?.error || "Failed to add item to the wishlist:",{position:'top-center'}
         );
 
         // Revert state to the previous backup
         setWishlist(previousWishlist);
       }
     },
-    [wishlist]
+    [wishlist, isAuthenticated]
   );
 
  
   const fetchWishlist = useCallback(async () => {
     try {
-      const response = await api.get("/wishlist");
-      setWishlist(response?.data?.wishlist?.items);
-
-      if (response.data.message !== "get wishlist item successfully") {
-        setWishlist([]);
+      if(isAuthenticated){
+        const response = await api.get("/wishlist");
+        setWishlist(response?.data?.wishlist?.items);
       }
+     
     } catch (error) {
-      console.error("Error fetching wishlist:", error?.response?.data?.error);
+      console.error("Error fetching wishlist:", error?.response?.data);
       setWishlist([]);
     }
-  }, []);
+  }, [isAuthenticated]);
 
  
 
@@ -95,14 +102,13 @@ export const WishlistProvider = ({ children }) => {
     );
     try {
       const response = await api.delete("/wishlist", { data: { productId } });
-      console.log(response);
       if (response?.status === 200) {
-        toast.info("item removed from the wishlist");
+        toast.info("item removed from the wishlist",{position:'top-center'});
       }
     } catch (error) {
       toast.error(
         error?.response?.data?.error ||
-          "failed to remove product from the wishlist"
+          "failed to remove product from the wishlist",{position:'top-center'}
       );
       setWishlist(previousWishlist);
     }

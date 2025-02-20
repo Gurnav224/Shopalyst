@@ -8,8 +8,6 @@ const useAxios = (endpoint) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
 
-  console.log(endpoint)
-
   const get = useCallback(async () => {
     setError("");
     setLoading(true);

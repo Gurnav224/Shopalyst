@@ -96,6 +96,10 @@ exports.viewWishlist = async (req, res) => {
       "items.product"
     );
 
+    if(wishlist === null){
+      return res.status(400).json({error:'no item in the wishlist', wishlist:[]})
+    }
+
     if (!wishlist) {
       return res.status(400).json({ error: "wishlist not found" });
     }

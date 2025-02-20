@@ -93,6 +93,9 @@ exports.viewCart = async (req, res) => {
       "items.product"
     );
 
+    if(cart === null) {
+      return res.status(400).json({error:'no items in cart', cart:[]})
+    }
 
     if (!cart) {
       return res.status(400).json({ error: "Empty cart" });

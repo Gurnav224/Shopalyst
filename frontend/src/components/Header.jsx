@@ -12,10 +12,11 @@ const Header = ({ searchQuery, setSearchQuery }) => {
   const [userDetails, setUserDetails] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const [searchParams , setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const { cart, fetchCart } = useCart();
   const { wishlist, fetchWishlist } = useWislist();
+  const { isAuthenticated } = useAuth();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -24,34 +25,33 @@ const Header = ({ searchQuery, setSearchQuery }) => {
 
   useEffect(() => {
     fetchCart();
-  }, [fetchCart]);
+  }, [fetchCart, isAuthenticated]);
 
   useEffect(() => {
     fetchWishlist();
-  }, [fetchWishlist]);
+  }, [fetchWishlist, isAuthenticated]);
 
   const handleLogout = () => {
     if (user?.email) {
-      toast.info("user logout successfully ");
+      toast.info("user logout successfully ",{position:'top-center'});
       logout();
-      navigate("/login");
+      navigate("/login",);
     } else {
-      toast.warn("user already logout");
+      toast.warn("user already logout",{position:'top-center'});
     }
   };
 
   const handleSearchChange = (e) => {
-    const {value} = e.target;
+    const { value } = e.target;
     const newParams = new URLSearchParams(searchParams);
-    if(value) {
-      newParams.set('name', value)
-    }
-    else{
-      newParams.delete('name')
+    if (value) {
+      newParams.set("name", value);
+    } else {
+      newParams.delete("name");
     }
     setSearchParams(newParams);
-    setSearchQuery(value)
-  }
+    setSearchQuery(value);
+  };
 
   return (
     <header className="relative">
@@ -119,7 +119,7 @@ const Header = ({ searchQuery, setSearchQuery }) => {
               >
                 <Heart className="text-gray-700" size={24} />
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-1">
-                  {wishlist?.length || 0}
+                  {isAuthenticated ? wishlist?.length : 0}
                 </span>
               </Link>
               {/* User Profile Wrapper */}
@@ -158,7 +158,7 @@ const Header = ({ searchQuery, setSearchQuery }) => {
               >
                 <ShoppingCart className="text-gray-700" size={24} />
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-1">
-                  {cart?.length || 0}
+                  {isAuthenticated ? cart?.length : 0}
                 </span>
               </Link>
             </div>
@@ -216,13 +216,13 @@ const Header = ({ searchQuery, setSearchQuery }) => {
                 <Link to="/wishlist" className="relative">
                   <Heart className="text-gray-700" size={24} />
                   <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-1">
-                    {wishlist?.length || 0}
+                    {isAuthenticated ? wishlist?.length : 0}
                   </span>
                 </Link>
                 <Link to="/cart" className="relative">
                   <ShoppingCart className="text-gray-700" size={24} />
                   <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-1">
-                    {cart?.length || 0}
+                    {isAuthenticated ? cart?.length : 0}
                   </span>
                 </Link>
               </div>
