@@ -8,13 +8,17 @@ import { useWislist } from "../context/WishlistContext";
 const Cart = () => {
   const { cart,  fetchCart, removeItemFromCart, updateQuantity } =
     useCart();
-  const { handleAddToWishlist, isProductInWishlist } = useWislist();
+  const { handleAddToWishlist, isProductInWishlist , fetchWishlist, wishlist} = useWislist();
 
   const totalAmount = cart?.reduce((acc,product) => acc + product.price*product.quantity ,0);
 
   useEffect(() => {
     fetchCart();
   }, [fetchCart]);
+
+  useEffect(() => {
+    fetchWishlist()
+  },[fetchWishlist, wishlist.length])
 
   return (
     <div className="min-h-screen bg-gray-50">
