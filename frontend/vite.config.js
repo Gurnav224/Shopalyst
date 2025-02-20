@@ -28,6 +28,10 @@ export default defineConfig(({ mode }) => {
       alias: {
         "@": resolve(__dirname, "./src"),
       },
+    },
+    build:{
+      sourcemap:true
+
     }
   };
 });
