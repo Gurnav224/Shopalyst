@@ -10,50 +10,49 @@ import api from '../services/clientAPI.js'
 const ProductDetails = () => {
 
   const { handleAddToCart, isProductInCart} = useCart();
-  const { handleAddToWishlist, isProductInWishlist, fetchWishlist, wishlist} = useWislist()
+  const { handleAddToWishlist, isProductInWishlist, fetchWishlist, wishlist} = useWislist();
 
   const { productId } = useParams();
   const [product, setProduct] = useState({});
   const [relatedProducts, setRelatedProducts] = useState([]);
+  const [quantity, setQuantity] = useState(0)
   const navigate = useNavigate();
 
-  const updateProduct = async (id, updatedQuantity) => {
-    try {
-      const response = await api.put(`/products/updateQuantity/${id}`,{quantity:updatedQuantity});
 
-      if (response.status === 200) {
-        setProduct((prevProduct) => ({
-          ...prevProduct,
-          quantity: updatedQuantity,
-        }));
-      }
-    } catch (error) {
-      console.error(error?.response?.data?.error || "Failed to update the product quantity" );
-    }
-  };
 
   const fetchProductById = useCallback(async () => {
     const response = await api.get(`/products/${productId}`);
     setProduct(response?.data?.product);
+    setQuantity(response?.data?.product?.quantity);
   }, [productId]);
 
-  useEffect(() => {
-    fetchProductById();
-  }, [fetchProductById]);
+
 
   useEffect(() => {
     fetchWishlist()
   },[fetchWishlist, wishlist.length])
 
-  const handleIncrement = (id) => {
-    const newQuantity = product.quantity + 1;
-    updateProduct(id, newQuantity);
+  const handleIncrement = async (id) => {
+    setQuantity(quantity + 1)
+    const response = await api.put(`/products/updateQuantity/${id}`, {action:'increment'})
+    setQuantity(response?.data?.product?.quantity)
   };
 
-  const handleDecrement = (id) => {
-    const newQuantity = Math.max(0, product.quantity - 1);
-    updateProduct(id, newQuantity);
+  const handleDecrement = async (id) => { 
+    setQuantity(quantity - 1)
+
+    const response = await api.put(`/products/updateQuantity/${id}`, {action:'decrement'});
+   
+    setQuantity(response?.data?.product?.quantity)    
   };
+  
+
+  useEffect(() => {
+    fetchProductById()
+  },[fetchProductById])
+
+  console.log('product quantity updated', product.quantity)
+
 
   const fetchCategoriesProduct = useCallback(async () => {
     try {
@@ -69,6 +68,8 @@ const ProductDetails = () => {
       fetchCategoriesProduct();
     }
   }, [fetchCategoriesProduct, product?.category]);
+
+  
 
 
   const handleNavigateToCart = (e) => {
@@ -190,13 +191,13 @@ const ProductDetails = () => {
             <div className="flex items-center border rounded-lg overflow-hidden">
               <button
                 onClick={() => handleDecrement(product._id)}
-                disabled={product.quantity <= 0}
+                disabled={quantity <= 1}
                 className="px-4 py-2 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 -
               </button>
               <span className="px-6 py-2 bg-white text-center min-w-[60px]">
-                {product.quantity}
+                {quantity }
               </span>
               <button
                 onClick={() => handleIncrement(product._id)}
