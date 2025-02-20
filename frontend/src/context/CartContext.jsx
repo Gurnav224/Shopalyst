@@ -8,20 +8,24 @@ import {
 } from "react";
 import api from "../services/clientAPI";
 import { toast } from "react-toastify";
+import { useAuth } from "./AuthContext";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
+  const { isAuthenticated } = useAuth();
 
   const fetchCart = useCallback(async () => {
     try {
-      const response = await api.get("/cart");
-      setCart(response?.data?.cart?.items);
+      if (isAuthenticated) {
+        const response = await api.get("/cart");
+        setCart(response?.data?.cart?.items);
+      }
     } catch (error) {
-      console.error(error);
+      console.error('failed to fetch cart', error?.response?.data);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   const handleAddToCart = async (product, e) => {
     // Stop event propagation to prevent link navigation
@@ -32,15 +36,18 @@ export const CartProvider = ({ children }) => {
     const { _id: productId } = product;
 
     try {
-      toast.success("Item added to cart");
+      if (isAuthenticated) {
+        toast.success("Item added to cart", { position: "top-center" });
 
-      const response = await api.post("/cart", { productId });
+        const response = await api.post("/cart", { productId });
 
-      console.log("add to cart response", response.data.cart.items);
-      setCart(response?.data?.cart?.items);
+        setCart(response?.data?.cart?.items);
+      } else {
+        toast.error("Please login to proceed", { position: "top-center" });
+      }
     } catch (error) {
-      console.error("failed to add to cart", error);
-      toast.error("failed to add item to cart");
+      console.error("failed to add to cart", error?.response?.data?.error);
+      toast.error("failed to add item to cart", { position: "top-center" });
     }
   };
 
@@ -52,17 +59,17 @@ export const CartProvider = ({ children }) => {
     setCart((prev) => prev.filter((item) => item.product._id !== productId));
 
     try {
-      toast.info("Item removed from cart successfully");
+      toast.info("Item removed from cart successfully",{position:'top-center'});
 
       const response = await api.delete(`/cart`, { data: { productId } });
       if (
         response?.data?.message !== "item from remove from cart successfully"
       ) {
-        toast.error("failed to remove item from the cart");
+        toast.error("failed to remove item from the cart",{position:'top-center'});
         setCart(previousCartList);
       }
     } catch (error) {
-      toast.error(error?.response?.data?.error || "failed to remove product");
+      toast.error(error?.response?.data?.error || "failed to remove product",{position:'top-center'});
 
       setCart(previousCartList);
     }
@@ -92,13 +99,16 @@ export const CartProvider = ({ children }) => {
       await api.put("/cart/update", { productId, action });
     } catch (error) {
       toast.error(
-        error?.response?.data?.error || "failed to update item quantity"
+        error?.response?.data?.error || "failed to update item quantity",{position:'top-center'}
       );
     }
   };
 
   useEffect(() => {
-    fetchCart();
+    if(cart.length > 0){
+
+      fetchCart();
+    }
   }, [fetchCart]);
 
   return (

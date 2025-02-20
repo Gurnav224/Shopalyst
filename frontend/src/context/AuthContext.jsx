@@ -10,16 +10,16 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     // Check if user is logged in
     const token = localStorage.getItem("token");
-    const userData =  localStorage.getItem("user") ;
-
-    console.log(userData);
+    const userData = JSON.parse(localStorage.getItem("user"));
 
     if (token && userData) {
       setUser(userData);
+      setIsAuthenticated(true);
     }
 
     setLoading(false);
@@ -27,15 +27,13 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (newUser) => {
     try {
-      
       const response = await api.post("/signup", newUser);
       const data = await response.data;
 
       return data;
     } catch (error) {
-      console.error('Error to signup ', error?.response?.data?.error)
-      setError(error?.response?.data?.error || 'Something went wrong')
-
+      console.error("Error to signup ", error?.response?.data?.error);
+      setError(error?.response?.data?.error || "Something went wrong");
     }
   };
 
@@ -47,18 +45,20 @@ export const AuthProvider = ({ children }) => {
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+      setIsAuthenticated(true);
       setUser(data.user);
 
       return data;
     } catch (error) {
       console.error("failed to login", error?.response?.data?.error);
-      setError(error?.response?.data?.error || 'Something went wrong')
+      setError(error?.response?.data?.error || "Something went wrong");
     }
   };
 
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    setIsAuthenticated(false);
     setUser(null);
   };
 
@@ -69,7 +69,8 @@ export const AuthProvider = ({ children }) => {
     signup,
     logout,
     error,
-    setError
+    setError,
+    isAuthenticated,
   };
 
   return (
