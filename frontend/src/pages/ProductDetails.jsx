@@ -10,7 +10,7 @@ import api from '../services/clientAPI.js'
 const ProductDetails = () => {
 
   const { handleAddToCart, isProductInCart} = useCart();
-  const { handleAddToWishlist, isProductInWishlist} = useWislist()
+  const { handleAddToWishlist, isProductInWishlist, fetchWishlist, wishlist} = useWislist()
 
   const { productId } = useParams();
   const [product, setProduct] = useState({});
@@ -40,6 +40,10 @@ const ProductDetails = () => {
   useEffect(() => {
     fetchProductById();
   }, [fetchProductById]);
+
+  useEffect(() => {
+    fetchWishlist()
+  },[fetchWishlist, wishlist.length])
 
   const handleIncrement = (id) => {
     const newQuantity = product.quantity + 1;
