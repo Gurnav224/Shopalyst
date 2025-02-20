@@ -2,15 +2,17 @@ const Product = require("../models/product.model");
 
 exports.getProducts = async (req, res) => {
   let query = {};
-  const searchTerm = req.query.search
-  if(searchTerm){
-    query.name = { $regex: searchTerm, $options: 'i' }
+  const searchTerm = req.query.search;
+  if (searchTerm) {
+    query.name = { $regex: searchTerm, $options: "i" };
   }
   try {
     const products = await Product.find(query);
 
-    if(products.length === 0) {
-      return res.status(400).json({error:'No products found with this name'})
+    if (products.length === 0) {
+      return res
+        .status(400)
+        .json({ error: "No products found with this name" });
     }
 
     res.json({ message: "get all products", products });
@@ -38,18 +40,23 @@ exports.getSingleProduct = async (req, res) => {
 
 exports.updateProductQuantity = async (req, res) => {
   const { id } = req.params;
-  const { quantity } = req.body;
+  const { action } = req.body;
+
   try {
-    const updateProductQuantity = await Product.findByIdAndUpdate(
+    const product = await Product.findByIdAndUpdate(
       id,
-      { quantity },
+      {
+        $inc: { quantity: action === "increment" ? 1 : -1 },
+      },
+
       { new: true }
     );
-    res
-      .status(200)
-      .json({ message: "product updated successfully", updateProductQuantity });
+
+    await product.save();
+
+    res.status(200).json({ message: "product updated successfully", product });
   } catch (error) {
-    res.status(500).json({error:'failed to update the product quantity'});
+    res.status(500).json({ error: "failed to update the product quantity" });
   }
 };
 
@@ -71,4 +78,3 @@ exports.getProductsByCategory = async (req, res) => {
     res.status(500).json({ message: "failed get category related product" });
   }
 };
-
