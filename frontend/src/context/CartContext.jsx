@@ -109,7 +109,7 @@ export const CartProvider = ({ children }) => {
 
       fetchCart();
     }
-  }, [fetchCart]);
+  }, [cart.length, fetchCart]);
 
   return (
     <CartContext.Provider

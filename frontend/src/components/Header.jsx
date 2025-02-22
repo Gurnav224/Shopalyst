@@ -24,12 +24,18 @@ const Header = ({ searchQuery, setSearchQuery }) => {
   };
 
   useEffect(() => {
-    fetchCart();
-  }, [fetchCart, isAuthenticated]);
+    if(cart.length > 0 ){
+      fetchCart();
+
+    }
+  }, [fetchCart, isAuthenticated, cart.length]);
 
   useEffect(() => {
-    fetchWishlist();
-  }, [fetchWishlist, isAuthenticated]);
+    if(wishlist.length > 0 ){
+      fetchWishlist();
+
+    }
+  }, [fetchWishlist, isAuthenticated, wishlist.length]);
 
   const handleLogout = () => {
     if (user?.email) {

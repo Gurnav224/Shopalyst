@@ -26,7 +26,10 @@ const ProductList = ({ searchQuery, setSearchQuery }) => {
   const {fetchWishlist , wishlist} = useWislist();
 
   useEffect(() => {
-    fetchWishlist()
+    if(wishlist.length > 0 ){
+
+      fetchWishlist()
+    }
   },[fetchWishlist, wishlist.length])
 
   const { category: categoryByParams } = useParams();
