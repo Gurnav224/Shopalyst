@@ -13,11 +13,17 @@ const Cart = () => {
   const totalAmount = cart?.reduce((acc,product) => acc + product.price*product.quantity ,0);
 
   useEffect(() => {
-    fetchCart();
-  }, [fetchCart]);
+    if(cart.length > 0 ){
+
+      fetchCart();
+    }
+  }, [fetchCart, cart.length]);
 
   useEffect(() => {
-    fetchWishlist()
+    if(wishlist.length > 0){
+
+      fetchWishlist()
+    }
   },[fetchWishlist, wishlist.length])
 
   return (

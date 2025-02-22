@@ -4,7 +4,7 @@ import { useNavigate , useLocation} from "react-router-dom";
 import { toast } from "react-toastify";
 
 const LoginForm = () => {
-  const { login , error, setError } = useAuth();
+  const { login , error, setError , loading} = useAuth();
 
 
   const [loginUser, setLoginUser] = useState({
@@ -106,6 +106,10 @@ const LoginForm = () => {
               />
             </div>
           </div>
+
+          {
+           loading && <p>loading.....</p>
+          }
 
           {error && (
             <div className="rounded-md bg-red-50 p-4">

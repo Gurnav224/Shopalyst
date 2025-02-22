@@ -40,18 +40,17 @@ exports.getSingleProduct = async (req, res) => {
 
 exports.updateProductQuantity = async (req, res) => {
   const { id } = req.params;
-  const { action } = req.body;
+  const { quantity } = req.body;
 
   try {
     const product = await Product.findByIdAndUpdate(
       id,
       {
-        $inc: { quantity: action === "increment" ? 1 : -1 },
+        quantity
       },
 
       { new: true }
     );
-
     await product.save();
 
     res.status(200).json({ message: "product updated successfully", product });
