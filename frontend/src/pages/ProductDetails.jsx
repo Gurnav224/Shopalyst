@@ -1,24 +1,21 @@
-/* eslint-disable react/prop-types */
 import { useParams, useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard.jsx";
 import { Star, ShoppingCart } from "lucide-react";
 import { useCart } from "../context/CartContext.jsx";
 import { useWislist } from "../context/WishlistContext.jsx";
-import api from '../services/clientAPI.js'
+import api from "../services/clientAPI.js";
 
 const ProductDetails = () => {
-
-  const { handleAddToCart, isProductInCart} = useCart();
-  const { handleAddToWishlist, isProductInWishlist, fetchWishlist, wishlist} = useWislist();
+  const { handleAddToCart, isProductInCart } = useCart();
+  const { handleAddToWishlist, isProductInWishlist, fetchWishlist, wishlist } =
+    useWislist();
 
   const { productId } = useParams();
   const [product, setProduct] = useState({});
   const [relatedProducts, setRelatedProducts] = useState([]);
-  const [quantity, setQuantity] = useState(0)
+  const [quantity, setQuantity] = useState();
   const navigate = useNavigate();
-
-
 
   const fetchProductById = useCallback(async () => {
     const response = await api.get(`/products/${productId}`);
@@ -26,40 +23,30 @@ const ProductDetails = () => {
     setQuantity(response?.data?.product?.quantity);
   }, [productId]);
 
-
-
   useEffect(() => {
-    fetchWishlist()
-  },[fetchWishlist, wishlist.length])
+    if (wishlist.length > 0) {
+      fetchWishlist();
+    }
+  }, [fetchWishlist, wishlist.length]);
 
-  const handleIncrement = async (id) => {
-    setQuantity(quantity + 1)
-    const response = await api.put(`/products/updateQuantity/${id}`, {action:'increment'})
-    setQuantity(response?.data?.product?.quantity)
+  const handleQuantityChange = async (e, id) => {
+    const updateQuantity = parseInt(e.target.value);
+    setQuantity(updateQuantity);
+    await api.put(`products/updateQuantity/${id}`, {
+      quantity: updateQuantity,
+    });
   };
 
-  const handleDecrement = async (id) => { 
-    setQuantity(quantity - 1)
-
-    const response = await api.put(`/products/updateQuantity/${id}`, {action:'decrement'});
-   
-    setQuantity(response?.data?.product?.quantity)    
-  };
-  
-
   useEffect(() => {
-    fetchProductById()
-  },[fetchProductById])
-
-  console.log('product quantity updated', product.quantity)
-
+    fetchProductById();
+  }, [fetchProductById]);
 
   const fetchCategoriesProduct = useCallback(async () => {
     try {
       const response = await api.get(`/products/category/${product?.category}`);
       setRelatedProducts(response?.data?.products || []);
     } catch (error) {
-      console.error("Error details:",  error.response?.data?.message );
+      console.error("Error details:", error.response?.data?.message);
     }
   }, [product?.category]);
 
@@ -68,9 +55,6 @@ const ProductDetails = () => {
       fetchCategoriesProduct();
     }
   }, [fetchCategoriesProduct, product?.category]);
-
-  
-
 
   const handleNavigateToCart = (e) => {
     e.stopPropagation();
@@ -84,6 +68,8 @@ const ProductDetails = () => {
       navigate("/cart");
     }, 2000);
   };
+
+  const quantityOptions = [1, 2, 3, 4, 5];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -186,25 +172,48 @@ const ProductDetails = () => {
           </p>
 
           {/* Quantity Control */}
-          <div className="flex items-center space-x-4 mb-6">
-            <span className="text-gray-700 font-medium">Quantity:</span>
-            <div className="flex items-center border rounded-lg overflow-hidden">
-              <button
-                onClick={() => handleDecrement(product._id)}
-                disabled={quantity <= 1}
-                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          <div className="flex items-center space-x-4 mb-6 gap-5">
+            <label className="font-bold text-gray-600" htmlFor="quantity">
+              Choose Quantity
+            </label>
+            <div className="relative inline-block">
+              {" "}
+              <select
+                value={quantity}
+                onChange={(e) => handleQuantityChange(e, product._id)}
+                className="appearance-none text-xl w-full pr-10 pl-4 py-2 border border-gray-300 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 bg-white text-gray-700"
               >
-                -
-              </button>
-              <span className="px-6 py-2 bg-white text-center min-w-[60px]">
-                {quantity }
-              </span>
-              <button
-                onClick={() => handleIncrement(product._id)}
-                className="px-4 py-2 bg-gray-100 hover:bg-gray-200"
-              >
-                +
-              </button>
+                <option value="">select</option>
+                {quantityOptions.map((qty) => (
+                  <option className="text-xl font-medium" key={qty} value={qty}>
+                    {qty}
+                  </option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
+                <svg
+                  className="w-8 font-medium"
+                  viewBox="0 0 24 24"
+                  fill="#000"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    {" "}
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z"
+                      fill="#000000"
+                    ></path>{" "}
+                  </g>
+                </svg>
+              </div>
             </div>
           </div>
 
