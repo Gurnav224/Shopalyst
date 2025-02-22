@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import { addressAPI } from "../api/address";
 import { MapPin } from "lucide-react";
 import {  toast } from "react-toastify";
-import { orderAPI } from "../api/orders";
 import { useNavigate } from "react-router-dom";
+import api from '../services/clientAPI';
 
 const Address = () => {
   const navigate = useNavigate();
@@ -37,16 +36,13 @@ const Address = () => {
 
   const createNewAddress = async (e) => {
     e.preventDefault();
-    // setAddress(address);
-
     try {
-      const response = await addressAPI.createAddress(address);
-      setAllAddress(response.address);
-      toast("new address created successfully");
-      console.log("new address created successfully", response);
+      const response = await api.post('/address', address);
+      setAllAddress(response.data?.address);
+      toast.success("new address created successfully",{position:'top-center'});
     } catch (error) {
-      console.error("failed to submit new address");
-      throw error;
+      console.error("failed to submit new address", error);
+      toast.error('failed to create new address',{position:'top-center'})
     }
 
     setAddress({
@@ -68,11 +64,11 @@ const Address = () => {
 
   const fetchAddress = useCallback(async () => {
     try {
-      const { address } = await addressAPI.getAllAddress();
-      setAllAddress(address);
+      const response = await api.get('/address');
+      setAllAddress(response.data?.address);
+
     } catch (error) {
-      console.error("failed to get all address");
-      throw error;
+      console.error("failed to get all address", error?.response?.data);
     }
   }, []);
 
@@ -89,13 +85,10 @@ const Address = () => {
 
   const createOrder = async (data) => {
     try {
-      console.log(data);
-      const order = await orderAPI.createOrder(data);
-      console.log("order created successfully", order);
+      await api.post('/order', data);
       navigate("/checkout");
     } catch (error) {
-      console.error("failed to create to order");
-      throw error;
+      console.error("failed to create to order", error);
     }
   };
 
