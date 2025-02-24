@@ -5,14 +5,19 @@ import { useCart } from "../context/CartContext";
 
 const Wishlist = () => {
 
- const {  wishlist , handleRemoveProductFromWishlist } = useWislist();
- const { handleAddToCart } = useCart()
+ const { handleRemoveProductFromWishlist , state:{wishlist , loading} } = useWislist();
+ const { handleAddToCart } = useCart();
+
 
   return (
     <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
       <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-8 text-gray-800 text-center">
         My Wishlist ({wishlist.length || 0})
       </h1>
+
+      {
+        loading && <p>loading.....</p>
+      }
       
       {wishlist.length === 0 ? (
         <div className="text-center py-16 bg-gray-50 rounded-lg">

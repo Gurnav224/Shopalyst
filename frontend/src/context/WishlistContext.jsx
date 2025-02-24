@@ -2,130 +2,116 @@
 import {
   createContext,
   useContext,
-  useState,
   useCallback,
+  useReducer,
 } from "react";
 import api from "../services/clientAPI";
 import { toast } from "react-toastify";
-import { useAuth } from "./AuthContext";
 
 const WishlistContext = createContext();
 
+const initialState = {
+  wishlist: [],
+  loading: true,
+  error: null,
+  isItemInWishlist: false,
+};
+
+function wishlistReducer(state, action) {
+  console.log(state, action);
+  switch (action.type) {
+    case "GET_WISHLIST":
+      return { ...state, wishlist: action.payload, loading: false };
+    case "ADD_TO_WISHLIST":
+      return {
+        ...state,
+        wishlist: [...state.wishlist, action.payload],
+      };
+    case "REMOVE_ITEM":
+      return {
+        ...state,
+        wishlist: state.wishlist.filter((item) => item._id !== action.payload),
+      };
+    default:
+      return state;
+  }
+}
+
 export const WishlistProvider = ({ children }) => {
-  const [wishlist, setWishlist] = useState([]);
-
-
-  const {isAuthenticated } = useAuth()
-
+  const [state, dispatch] = useReducer(wishlistReducer, initialState);
 
   const isProductInWishlist = (productId) => {
-    return wishlist?.some((item) => {
+    return state?.wishlist?.some((item) => {
       return item?.product?._id === productId;
     });
   };
 
-  const handleAddToWishlist = useCallback(
-    async (product, e) => {
-      e.stopPropagation();
-      e.preventDefault();
-      const previousWishlist = [...wishlist]; // Backup current state
-
-      try {
-        
-        if(isAuthenticated){
-
-          toast.success("Item added to wishlist",{position:'top-center'});
-
-        const { _id } = product;
-
-        // Check if the product is already in the wishlist
-        const existingProduct = wishlist.find(
-          (item) => item?.product?._id === _id
-        );
-
-        //  if existingProduct increase It's quanity
-        const updatedWishlist = existingProduct
-          ? wishlist.map((item) =>
-              item.product._id === _id
-                ? { ...item, quantity: item.quantity + 1 }
-                : item
-            )
-          : [...wishlist, { ...product, quantity: 1 }];
-
-        setWishlist(updatedWishlist);
-
-        // API call to update the wishlist on the server
-          await api.post(`/wishlist`, {
-          productId: _id,
-          quantity: 1,
-        });
-
-        }
-        else{
-          toast.error('Please login to Proceed',{position:'top-center'})
-        }
-
-      } catch (error) {
-        toast.error(
-          error?.response?.data?.error || "Failed to add item to the wishlist:",{position:'top-center'}
-        );
-
-        // Revert state to the previous backup
-        setWishlist(previousWishlist);
-      }
-    },
-    [wishlist, isAuthenticated]
-  );
-
- 
   const fetchWishlist = useCallback(async () => {
     try {
-      if(isAuthenticated){
-        const response = await api.get("/wishlist");
-        setWishlist(response?.data?.wishlist?.items);
-      }
-     
+      const response = await api.get("/wishlist");
+      dispatch({ type: "GET_WISHLIST", payload: response.data.wishlist.items });
     } catch (error) {
       console.error("Error fetching wishlist:", error?.response?.data);
-      setWishlist([]);
     }
-  }, [isAuthenticated]);
+  }, []);
 
- 
+  const handleAddToWishlist = async (product, e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    try {
+      const response = await api.post("/wishlist", { productId: product });
+      dispatch({ type: "ADD_TO_WISHLIST", payload: product });
+
+      if (response.status === 200) {
+        toast.success("item add to wishlist successfully", {
+          position: "top-center",
+        });
+      } else {
+        dispatch({ type: "REMOVE_ITEM", payload: product });
+        toast.error("failed to add item to the wishlist", {
+          position: "top-center",
+        });
+      }
+    } catch (error) {
+      dispatch({ type: "REMOVE_ITEM", payload: product });
+      console.error(error);
+      toast.error("Failed to add item to the wishlist", {
+        position: "top-center",
+      });
+    }
+  };
 
   const handleRemoveProductFromWishlist = async (productId) => {
-    // Store the previous wishlist state
-    const previousWishlist = [...wishlist];
-    // Optimistically update the UI
-    setWishlist((prev) =>
-      prev.filter((item) => item?.product?._id !== productId)
-    );
+    dispatch({ type: "REMOVE_ITEM", payload: productId });
     try {
       const response = await api.delete("/wishlist", { data: { productId } });
       if (response?.status === 200) {
-        toast.info("item removed from the wishlist",{position:'top-center'});
+        toast.info("item removed from the wishlist", {
+          position: "top-center",
+        });
       }
     } catch (error) {
       toast.error(
         error?.response?.data?.error ||
-          "failed to remove product from the wishlist",{position:'top-center'}
+          "failed to remove product from the wishlist",
+        { position: "top-center" }
       );
-      setWishlist(previousWishlist);
     }
-  };
+    fetchWishlist()
+  }
 
- 
 
-  
 
   return (
     <WishlistContext.Provider
       value={{
-        wishlist,
         fetchWishlist,
         handleAddToWishlist,
         handleRemoveProductFromWishlist,
         isProductInWishlist,
+        state,
+        dispatch,
       }}
     >
       {children}

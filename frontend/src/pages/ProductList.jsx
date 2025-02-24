@@ -23,13 +23,10 @@ const ProductList = ({ searchQuery, setSearchQuery }) => {
   const { data: categories, get: getCategories } = useFetch("/categories");
   const { data: productsData, get: getProducts } = useFetch("/products");
 
-  const {fetchWishlist , wishlist} = useWislist();
+  const {fetchWishlist , state:{wishlist}} = useWislist();
 
   useEffect(() => {
-    if(wishlist.length > 0 ){
-
       fetchWishlist()
-    }
   },[fetchWishlist, wishlist.length])
 
   const { category: categoryByParams } = useParams();

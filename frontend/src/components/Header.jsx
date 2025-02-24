@@ -15,7 +15,7 @@ const Header = ({ searchQuery, setSearchQuery }) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const { cart, fetchCart } = useCart();
-  const { wishlist, fetchWishlist } = useWislist();
+  const { state:{wishlist}, fetchWishlist } = useWislist();
   const { isAuthenticated } = useAuth();
 
   const toggleMenu = () => {
@@ -24,18 +24,12 @@ const Header = ({ searchQuery, setSearchQuery }) => {
   };
 
   useEffect(() => {
-    if(cart.length > 0 ){
-      fetchCart();
-
-    }
-  }, [fetchCart, isAuthenticated, cart.length]);
+     fetchCart();
+  }, [fetchCart, isAuthenticated]);
 
   useEffect(() => {
-    if(wishlist.length > 0 ){
       fetchWishlist();
-
-    }
-  }, [fetchWishlist, isAuthenticated, wishlist.length]);
+  }, [fetchWishlist, isAuthenticated]);
 
   const handleLogout = () => {
     if (user?.email) {
