@@ -20,7 +20,7 @@ function App() {
 
   return (
     <Router>
-      <ToastContainer />
+      <ToastContainer  />
 
       <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <Routes>

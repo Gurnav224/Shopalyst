@@ -33,17 +33,16 @@ const Header = ({ searchQuery, setSearchQuery }) => {
   useEffect(() => {
     if(wishlist.length > 0 ){
       fetchWishlist();
-
     }
   }, [fetchWishlist, isAuthenticated, wishlist.length]);
 
   const handleLogout = () => {
     if (user?.email) {
-      toast.info("user logout successfully ",{position:'top-center'});
+      toast.info("user logout successfully ",{position:'bottom-right'});
       logout();
       navigate("/login",);
     } else {
-      toast.warn("user already logout",{position:'top-center'});
+      toast.warn("user already logout",{position:'bottom-right'});
     }
   };
 

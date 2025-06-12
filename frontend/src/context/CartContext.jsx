@@ -37,17 +37,17 @@ export const CartProvider = ({ children }) => {
 
     try {
       if (isAuthenticated) {
-        toast.success("Item added to cart", { position: "top-center" });
+        toast.success("Item added to cart", { position: "bottom-right" });
 
         const response = await api.post("/cart", { productId });
 
         setCart(response?.data?.cart?.items);
       } else {
-        toast.error("Please login to proceed", { position: "top-center" });
+        toast.error("Please login to proceed", { position: "bottom-right" });
       }
     } catch (error) {
       console.error("failed to add to cart", error?.response?.data?.error);
-      toast.error("failed to add item to cart", { position: "top-center" });
+      toast.error("failed to add item to cart", { position: "bottom-right" });
     }
   };
 
@@ -59,17 +59,17 @@ export const CartProvider = ({ children }) => {
     setCart((prev) => prev.filter((item) => item.product._id !== productId));
 
     try {
-      toast.info("Item removed from cart successfully",{position:'top-center'});
+      toast.info("Item removed from cart successfully",{position:'bottom-right'});
 
       const response = await api.delete(`/cart`, { data: { productId } });
       if (
         response?.data?.message !== "item from remove from cart successfully"
       ) {
-        toast.error("failed to remove item from the cart",{position:'top-center'});
+        toast.error("failed to remove item from the cart",{position:'bottom-right'});
         setCart(previousCartList);
       }
     } catch (error) {
-      toast.error(error?.response?.data?.error || "failed to remove product",{position:'top-center'});
+      toast.error(error?.response?.data?.error || "failed to remove product",{position:'bottom-right'});
 
       setCart(previousCartList);
     }
@@ -99,7 +99,7 @@ export const CartProvider = ({ children }) => {
       await api.put("/cart/update", { productId, action });
     } catch (error) {
       toast.error(
-        error?.response?.data?.error || "failed to update item quantity",{position:'top-center'}
+        error?.response?.data?.error || "failed to update item quantity",{position:'bottom-right'}
       );
     }
   };

@@ -34,7 +34,7 @@ export const WishlistProvider = ({ children }) => {
         
         if(isAuthenticated){
 
-          toast.success("Item added to wishlist",{position:'top-center'});
+          toast.success("Item added to wishlist",{position:'bottom-right'});
 
         const { _id } = product;
 
@@ -62,12 +62,12 @@ export const WishlistProvider = ({ children }) => {
 
         }
         else{
-          toast.error('Please login to Proceed',{position:'top-center'})
+          toast.error('Please login to Proceed',{position:'bottom-right'})
         }
 
       } catch (error) {
         toast.error(
-          error?.response?.data?.error || "Failed to add item to the wishlist:",{position:'top-center'}
+          error?.response?.data?.error || "Failed to add item to the wishlist:",{position:'bottom-right'}
         );
 
         // Revert state to the previous backup
@@ -103,12 +103,12 @@ export const WishlistProvider = ({ children }) => {
     try {
       const response = await api.delete("/wishlist", { data: { productId } });
       if (response?.status === 200) {
-        toast.info("item removed from the wishlist",{position:'top-center'});
+        toast.info("item removed from the wishlist",{position:'bottom-right'});
       }
     } catch (error) {
       toast.error(
         error?.response?.data?.error ||
-          "failed to remove product from the wishlist",{position:'top-center'}
+          "failed to remove product from the wishlist",{position:'bottom-right'}
       );
       setWishlist(previousWishlist);
     }

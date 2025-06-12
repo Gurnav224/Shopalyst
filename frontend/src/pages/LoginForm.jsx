@@ -34,12 +34,12 @@ const LoginForm = () => {
       const data = await login(loginUser);
 
       if (data.message) {
-        toast.success("login successfully",{position:'top-center'});
+        toast.success("login successfully",{position:'bottom-right'});
         navigate("/");
       }
 
       if (data.error) {
-        toast.error(data.error,{position:'top-center'});
+        toast.error(data.error,{position:'bottom-right'});
         setError(data.error);
       }
     } else {

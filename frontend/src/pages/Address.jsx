@@ -39,10 +39,10 @@ const Address = () => {
     try {
       const response = await api.post('/address', address);
       setAllAddress(response.data?.address);
-      toast.success("new address created successfully",{position:'top-center'});
+      toast.success("new address created successfully",{position:'bottom-right'});
     } catch (error) {
       console.error("failed to submit new address", error);
-      toast.error('failed to create new address',{position:'top-center'})
+      toast.error('failed to create new address',{position:'bottom-right'})
     }
 
     setAddress({

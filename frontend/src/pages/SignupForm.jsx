@@ -41,7 +41,7 @@ const SignForm = () => {
     e.preventDefault();
 
     if(newUser.password.length <= 6){
-      toast.error('password should 6 character long',{position:'top-center'});
+      toast.error('password should 6 character long',{position:'bottom-right'});
       return
     }
 
@@ -51,12 +51,12 @@ const SignForm = () => {
       const data = await signup(newUser);
 
       if (data.message) {
-        toast.success("Signup successfully",{position:'top-center'});
+        toast.success("Signup successfully",{position:'bottom-right'});
         navigate("/login");
       }
       if (data.error) {
         setError(data.error);
-        toast.error(data.error,{position:'top-center'});
+        toast.error(data.error,{position:'bottom-right'});
       }
     } else {
       setMessage("Invalid Email");
