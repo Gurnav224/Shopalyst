@@ -91,26 +91,157 @@ Watch a walkthrough (5–7 minutes) of all major features of this app:
 
 ## API Reference
 
-### **GET	/api/products**<br>	 
-List all products<br>	 
-Sample Response:<br>
-```[{ _id, title, summary, ... }, …]```
+### POSTMAN API [link](https://www.postman.com/navigation-astronaut-79621080/workspace/public/collection/38276720-8fa852a0-90fa-4982-ba46-d918086ee3da?action=share&creator=38276720)
 
-### **GET	/api/products/:id**<br>	 	
-Get details for one product<br>		
-Sample Response:<br>
-```{ _id, title, , ... }```
+### **POST	/api/signup**<br>	
+create new user 
+
+request 
+
+```json
+{
+  "email":"user11@gmail.com",
+  "name":"user11",
+  "password":"user11@pass"
+}
+
+```
+
+response 
+
+```json
+{
+    "message": "Registered successfully",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODUxMjkyNjdlYjM4NTMyODhlYjExNDciLCJpYXQiOjE3NTAxNDk0MTUsImV4cCI6MTc1MDIzNTgxNX0.HtqzQxWGnLlEhCfMjp6XhV6WXOr7nXj5gzIIJwhWPFU",
+    "user": {
+        "id": "685129267eb3853288eb1147",
+        "email": "user11@gmail.com",
+        "name": "user11"
+    }
+}
+```
+---
+
+### **POST /api/login**<br>
+
+request
+```json
+{
+  "email":"user11@gmail.com",
+  "password":"user11@pass"
+}
+```
+response
+```json
+{
+    "message": "Login Successful",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODUxMjkyNjdlYjM4NTMyODhlYjExNDciLCJpYXQiOjE3NTAxNDk2MTIsImV4cCI6MTc1MDIzNjAxMn0.LGSCUCYqoGV-h-ETgs0eXU0LElssqLZBRa4_xjpjZM4",
+    "user": {
+        "id": "685129267eb3853288eb1147",
+        "email": "user11@gmail.com",
+        "name": "user11"
+    }
+}
+```
+---
+
+### **GET /api/products** <br>
+Get all products (requires Bearer token)
+response 
+```json
+{
+    "message": "get all products",
+    "products": [
+        {
+            "_id": "67579a39d10e1b3558a6398f",
+            "name": "Classic White T-Shirt",
+            "description": "A comfortable and versatile white t-shirt made from 100% organic cotton.",
+            "thumbnail": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200&h=200&fit=crop",
+            "images": [
+                "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800",
+                "https://images.unsplash.com/photo-1622445275576-721325763afe?w=800"
+            ],
+            "price": 24.99,
+            "rating": 4,
+            "category": "Tops",
+            "quantity": -3,
+            "brand": "EcoWear",
+            "__v": 0
+        },
+        ]
+```
+
+### **GET /api/products/category/:categoryName**
+Get products by category
+
+```js
+Example:
+/api/products/category/Tops
+```
+
+### **PUT /api/products/updateQuantity/:id**
+Update product quantity
+
+```json
+{
+  "quantity": 6
+}
+```
 
 
-### **POST	/api/products**<br> 	
-Create a new product (protected)<br>	
-Sample Response:<br>
-```{ _id, title, summary, ... }```
+### **GET /api/categories**
+Get all categories
 
-### **POST	/api/login**<br>  	
-login a existing user <br> 	 
-Sample Response:<br> 
-```{ userId, token }```
+array of categories
+
+### **GET /api/categories/:id**
+Get all category by id
+```json
+Example:
+/api/categories/67579a39d10e1b3558a63990
+```
+
+## 🛒 Cart
+
+### **POST /api/cart**
+Add product to cart (requires Bearer token)
+```json
+{
+  "user": "676405743314123943caf1f6",
+  "productId": "67579a3ed10e1b3558a6399d",
+  "quantity": 1
+}
+```
+### **PUT /api/cart/update**
+Update cart product quantity (requires Bearer token)
+
+request body
+```json
+{
+  "productId": "67579a3ed10e1b3558a6399d",
+  "action": "increase"
+}
+
+```
+
+## Wishlist
+### **POST /api/wishlist**
+Add product to wishlist (requires Bearer token)
+
+Request body
+
+```json
+
+{
+  "productId": "67579a3dd10e1b3558a63995",
+  "quantity": 1
+}
+```
+
+### DELETE /api/wishlist
+Remove product from wishlist (requires Bearer token)
+
+
 
 ## Contact
 For bugs or feature requests, please reach out to chaudharyg856@gmail.com
